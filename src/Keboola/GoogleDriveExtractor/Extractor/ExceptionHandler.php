@@ -19,7 +19,7 @@ class ExceptionHandler
 
             $errorSpec = json_decode((string) $e->getResponse()->getBody()->getContents(), true);
 
-            if (array_key_exists('error', $errorSpec)) {
+            if ($errorSpec && array_key_exists('error', $errorSpec)) {
                 if ($errorSpec['error'] === 'invalid_grant') {
                     throw new UserException(
                         sprintf(
