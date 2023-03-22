@@ -34,7 +34,7 @@ class Application
             }
             return $logger;
         };
-        if (empty($config['authorization'])) {
+        if (!isset($config['authorization']['oauth_api']['credentials']['#data'])) {
             throw new UserException('Missing authorization data');
         }
         $tokenData = json_decode($config['authorization']['oauth_api']['credentials']['#data'], true);
