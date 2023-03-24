@@ -1,12 +1,8 @@
 # google-drive-extractor
 
-[![Docker Repository on Quay](https://quay.io/repository/keboola/google-drive-extractor/status "Docker Repository on Quay")](https://quay.io/repository/keboola/google-drive-extractor)
-[![Build Status](https://travis-ci.org/keboola/google-drive-extractor.svg?branch=master)](https://travis-ci.org/keboola/google-drive-extractor)
-[![Code Climate](https://codeclimate.com/github/keboola/google-drive-extractor/badges/gpa.svg)](https://codeclimate.com/github/keboola/google-drive-extractor)
-[![Test Coverage](https://codeclimate.com/github/keboola/google-drive-extractor/badges/coverage.svg)](https://codeclimate.com/github/keboola/google-drive-extractor/coverage)
-[![License](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/keboola/google-drive-extractor/blob/master/LICENSE.md)
+[![License](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/keboola/google-drive-extractor/blob/master/LICENSE)
 
-Extract data from Goole Drive files and spreadsheets.
+Extract data from Google Drive files and spreadsheets.
 
 ## Example configuration
 
@@ -31,12 +27,12 @@ Note that this extractor is using [Keboola OAuth Bundle](https://github.com/kebo
 1. Create application in Google Developer console.
 
 - Enable APIs: `Google Drive API`, ` Google Sheets API`
-- Go to `Credentials` section and create new credentials of type `OAuth Client ID`. Use `https://SYRUP_INSTANCE.keboola.com/oauth-v2/authorize/keboola.ex-google-drive/callback` as redirec URI.
+- Go to `Credentials` section and create new credentials of type `OAuth Client ID`. Use `https://SYRUP_INSTANCE.keboola.com/oauth-v2/authorize/keboola.ex-google-drive/callback` as redirect URI.
 
 2. Register application in Keboola Oauth [http://docs.oauthv2.apiary.io/#reference/manage/addlist-supported-api/add-new-component](http://docs.oauthv2.apiary.io/#reference/manage/addlist-supported-api/add-new-component)
 
 
-```
+```json
 { 
     "component_id": "keboola.ex-google-drive",
     "friendly_name": "Google Drive Extractor",
@@ -52,15 +48,17 @@ Note that this extractor is using [Keboola OAuth Bundle](https://github.com/kebo
 
 App is developed on localhost using TDD.
 
-1. Clone from repository: `git clone git@github.com:keboola/google-drive-extractor-old.git`
-2. Change directory: `cd google-drive-extractor-old`
-3. Install dependencies: `composer install --no-interaction`
-4. Create `tests.sh` file from template `tests.sh.template`. 
+1. Clone from repository: `git clone git@github.com:keboola/google-drive-extractor.git`
+2. Change directory: `cd google-drive-extractor`
+3. Build docker image: `docker-compose build`
+4. Install dependencies: `docker-compose run --rm dev composer install --no-scripts`
 5. You will need working OAuth credentials. 
     - Go to Googles [OAuth 2.0 Playground](https://developers.google.com/oauthplayground). 
     - In the configuration (the cog wheel on the top right side) check `Use your own OAuth credentials` and paste your OAuth Client ID and Secret.
-    - Go through the authorization flow and generate `Access` and `Refresh` tokens. Copy and paste them into the `tests.sh` file.    
-6. Run the tests: `./tests.sh`
+    - Go through the authorization flow and generate `Access` and `Refresh` tokens. 
+    - Create `.env` file from template [.env.template](./.env.template).
+    - Fill `.env` with OAuth Client ID, Secret and obtained tokens.
+6. Run the tests: `docker-compose run --rm dev composer ci`
 
 ## License
 

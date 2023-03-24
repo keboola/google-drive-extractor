@@ -1,24 +1,17 @@
 version: "2"
 services:
-  dev:
-    build: .
+  app: &main
     image: keboola/google-drive-extractor
+    build:
+      context: .
+    environment:
+      - CLIENT_ID
+      - CLIENT_SECRET
+      - ACCESS_TOKEN
+      - REFRESH_TOKEN
+
+  dev:
+    <<: *main
     volumes:
       - .:/code
-    working_dir: /code
-    command: bash
-    environment:
-      CLIENT_ID: $CLIENT_ID
-      CLIENT_SECRET: $CLIENT_SECRET
-      ACCESS_TOKEN: $ACCESS_TOKEN
-      REFRESH_TOKEN: $REFRESH_TOKEN
 
-  tests:
-    build: .
-    image: keboola/google-drive-extractor
-    command: composer ci
-    environment:
-      CLIENT_ID: $CLIENT_ID
-      CLIENT_SECRET: $CLIENT_SECRET
-      ACCESS_TOKEN: $ACCESS_TOKEN
-      REFRESH_TOKEN: $REFRESH_TOKEN
