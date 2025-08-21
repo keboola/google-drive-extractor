@@ -53,6 +53,9 @@
   "config": {
     "sort-packages": true,
     "process-timeout": 3600,
-    "platform": { "php": "7.4.33" }
+    "platform": { "php": "7.4.33" },
+    "allow-plugins": {
+      "dealerdirect/phpcodesniffer-composer-installer": true
+    }
   }
 }
