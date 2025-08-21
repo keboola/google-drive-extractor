@@ -15,8 +15,10 @@ class Output
 
     private CsvWriter $csv;
 
+    /** @var array<int,string>|null */
     private ?array $header;
 
+    /** @var array<string,mixed> */
     private array $sheetCfg;
 
     public function __construct(string $dataDir, string $outputBucket)
@@ -25,6 +27,9 @@ class Output
         $this->outputBucket = $outputBucket;
     }
 
+    /**
+     * @param array<string,mixed> $sheet
+     */
     public function createCsv(array $sheet): string
     {
         $outTablesDir = $this->dataDir . '/out/tables';
@@ -42,6 +47,9 @@ class Output
         return $filename;
     }
 
+    /**
+     * @param array<int, array<int,string>> $data
+     */
     public function write(array $data, int $offset): void
     {
         if (!($this->csv instanceof CsvWriter)) {
@@ -50,7 +58,9 @@ class Output
 
         if ($this->header === null) {
             $headerRowNum = $this->sheetCfg['header']['rows'] - 1;
-            $this->header = $data[$headerRowNum];
+            /** @var array<int,string> $headerRow */
+            $headerRow = $data[$headerRowNum];
+            $this->header = $headerRow;
             $headerLength = $this->getHeaderLength($data, (int) $headerRowNum);
         } else {
             $headerLength = count($this->header);
@@ -60,6 +70,7 @@ class Output
             // backward compatibility fix
             if ($this->sheetCfg['header']['rows'] === 1 && $k === 0 && $offset === 1) {
                 if (!isset($this->sheetCfg['header']['sanitize']) || $this->sheetCfg['header']['sanitize'] !== false) {
+                    /** @var array<int,string> $row */
                     $row = $this->normalizeCsvHeader($row);
                 }
             }
@@ -82,19 +93,26 @@ class Output
 
         if (file_exists($this->dataDir . '/config.json')) {
             return (bool) file_put_contents($outFilename, json_encode($manifestData));
-        } else {
-            return (bool) file_put_contents($outFilename, Yaml::dump($manifestData));
         }
+        return (bool) file_put_contents($outFilename, Yaml::dump($manifestData));
     }
 
+    /**
+     * @param array<int,string> $header
+     * @return array<int,string>
+     */
     protected function normalizeCsvHeader(array $header): array
     {
         foreach ($header as &$col) {
             $col = Utility::sanitize($col);
         }
+        /** @var array<int,string> $header */
         return $header;
     }
 
+    /**
+     * @param array<int, array<int,string>> $data
+     */
     private function getHeaderLength(array $data, int $headerRowNum): int
     {
         $headerLength = 0;

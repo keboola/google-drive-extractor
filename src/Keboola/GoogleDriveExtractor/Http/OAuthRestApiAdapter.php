@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Keboola\GoogleDriveExtractor\Http;
@@ -15,10 +16,13 @@ class OAuthRestApiAdapter implements ApiClientInterface
         $this->api = $api;
     }
 
-    /** @param array<string,string> $headers @param array<string,mixed> $options */
-    public function request(string $uri, string $method = 'GET', array $headers = [], array $options = []): ResponseInterface
+    /**
+     * @param array<string,string> $h   Headers
+     * @param array<string,mixed>  $o   Options
+     */
+    public function request(string $u, string $m = 'GET', array $h = [], array $o = []): ResponseInterface
     {
-        return $this->api->request($uri, $method, $headers, $options);
+        return $this->api->request($u, $m, $h, $o);
     }
 
     public function setBackoffsCount(int $count): void

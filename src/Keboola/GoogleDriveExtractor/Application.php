@@ -7,6 +7,7 @@ namespace Keboola\GoogleDriveExtractor;
 use GuzzleHttp\Exception\RequestException;
 use GuzzleHttp\Psr7\Response;
 use Keboola\Google\ClientBundle\Google\RestApi as KeboolaRestApi;
+use Keboola\GoogleDriveExtractor\Auth\ServiceAccountTokenFactory;
 use Keboola\GoogleDriveExtractor\Configuration\ConfigDefinition;
 use Keboola\GoogleDriveExtractor\Exception\ApplicationException;
 use Keboola\GoogleDriveExtractor\Exception\UserException;
@@ -20,12 +21,14 @@ use Monolog\Logger;
 use Pimple\Container;
 use Symfony\Component\Config\Definition\Exception\InvalidConfigurationException;
 use Symfony\Component\Config\Definition\Processor;
-use Keboola\GoogleDriveExtractor\Auth\ServiceAccountTokenFactory;
 
 class Application
 {
     private Container $container;
 
+    /**
+     * @param array<string,mixed> $config
+     */
     public function __construct(array $config)
     {
         $container = new Container();
@@ -41,16 +44,16 @@ class Application
             return $logger;
         };
 
-        $saRaw   = $config['authorization']['#serviceAccountJson']
+        $saRaw = $config['authorization']['#serviceAccountJson']
             ?? $config['authorization']['serviceAccountJson']
             ?? null;
-        $hasSa   = !empty($saRaw);
+        $hasSa = !empty($saRaw);
         $hasOauth = isset($config['authorization']['oauth_api']['credentials']['#data']);
 
         if (!$hasSa && !$hasOauth) {
-            throw new UserException(
-                'Missing authorization: provide either authorization.#serviceAccountJson or authorization.oauth_api.credentials.#data'
-            );
+            $msg = 'Missing authorization: provide either authorization.#serviceAccountJson'
+                . ' or authorization.oauth_api.credentials.#data';
+            throw new UserException($msg);
         }
 
         if ($hasSa) {
@@ -85,8 +88,8 @@ class Application
                     $creds['appKey'],
                     $creds['#appSecret'],
                     $tokenData['access_token'] ?? '',
-                    $tokenData['refresh_token']
-                );
+                    $tokenData['refresh_token'],
+                ); // ← trailing comma added
                 return new OAuthRestApiAdapter($rest);
             };
         }
@@ -103,13 +106,16 @@ class Application
             return new Extractor(
                 $c['google_drive_client'],
                 $c['output'],
-                $c['logger']
-            );
+                $c['logger'],
+            ); // ← trailing comma added
         };
 
         $this->container = $container;
     }
 
+    /**
+     * @return array<string,mixed>
+     */
     public function run(): array
     {
         $actionMethod = $this->container['action'] . 'Action';
@@ -146,11 +152,14 @@ class Application
                 $e,
                 [
                     'response' => $response ? $response->getBody()->getContents() : null,
-                ]
-            );
+                ],
+            ); // ← trailing comma added
         }
     }
 
+    /**
+     * @return array<string,mixed>
+     */
     // phpcs:disable SlevomatCodingStandard.Classes.UnusedPrivateElements.UnusedMethod
     private function runAction(): array
     {
@@ -164,14 +173,18 @@ class Application
         ];
     }
 
+    /**
+     * @param array<string,mixed> $parameters
+     * @return array<string,mixed>
+     */
     private function validateParameters(array $parameters): array
     {
         try {
             $processor = new Processor();
             return $processor->processConfiguration(
                 new ConfigDefinition(),
-                [$parameters]
-            );
+                [$parameters],
+            ); // ← trailing comma added
         } catch (InvalidConfigurationException $e) {
             throw new UserException($e->getMessage(), 400, $e);
         }

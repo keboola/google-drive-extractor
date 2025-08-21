@@ -8,6 +8,7 @@ use Keboola\GoogleDriveExtractor\Exception\UserException;
 use Keboola\GoogleDriveExtractor\GoogleDrive\Client;
 use Monolog\Logger;
 use Psr\Http\Message\ResponseInterface;
+use Throwable;
 
 class Extractor
 {
@@ -28,6 +29,9 @@ class Extractor
         $this->driveApi->getApi()->setRefreshTokenCallback([$this, 'refreshTokenCallback']);
     }
 
+    /**
+     * @return callable(ResponseInterface):bool
+     */
     public function getBackoffCallback403(): callable
     {
         return function ($response) {
@@ -45,6 +49,10 @@ class Extractor
         };
     }
 
+    /**
+     * @param array<int, array<string,mixed>> $sheets
+     * @return array<string, array<string,string>>
+     */
     public function run(array $sheets): array
     {
         $status = [];
@@ -64,12 +72,12 @@ class Extractor
                     $this->export($spreadsheet, $sheet);
                 } catch (UserException $e) {
                     throw new UserException($e->getMessage(), 0, $e);
-                } catch (\Throwable $e) {
+                } catch (Throwable $e) {
                     $exceptionHandler->handleExportException($e, $sheet);
                 }
             } catch (UserException $e) {
                 throw new UserException($e->getMessage(), 0, $e);
-            } catch (\Throwable $e) {
+            } catch (Throwable $e) {
                 $exceptionHandler->handleGetSpreadsheetException($e, $sheet);
             }
 
@@ -79,6 +87,10 @@ class Extractor
         return $status;
     }
 
+    /**
+     * @param array<string,mixed> $spreadsheet
+     * @param array<string,mixed> $sheetCfg
+     */
     private function export(array $spreadsheet, array $sheetCfg): void
     {
         $sheet = $this->getSheetById($spreadsheet['sheets'], (string) $sheetCfg['sheetId']);
@@ -88,12 +100,12 @@ class Extractor
         $limit = 1000;
 
         while ($offset <= $rowCount) {
-            $this->logger->info(sprintf('Extracting rows %s to %s', $offset, $offset+$limit));
+            $this->logger->info(sprintf('Extracting rows %s to %s', $offset, $offset + $limit));
             $range = $this->getRange($sheet['properties']['title'], $columnCount, $offset, $limit);
 
             $response = $this->driveApi->getSpreadsheetValues(
                 $spreadsheet['spreadsheetId'],
-                $range
+                $range,
             );
 
             if (!empty($response['values'])) {
@@ -110,6 +122,10 @@ class Extractor
         }
     }
 
+    /**
+     * @param array<int, array<string,mixed>> $sheets
+     * @return array<string,mixed>
+     */
     private function getSheetById(array $sheets, string $id): array
     {
         foreach ($sheets as $sheet) {

@@ -7,10 +7,14 @@ namespace Keboola\GoogleDriveExtractor\Extractor;
 use GuzzleHttp\Exception\RequestException;
 use Keboola\GoogleDriveExtractor\Exception\ApplicationException;
 use Keboola\GoogleDriveExtractor\Exception\UserException;
+use Throwable;
 
 class ExceptionHandler
 {
-    public function handleGetSpreadsheetException(\Throwable $e, array $sheet): void
+    /**
+     * @param array<string,mixed> $sheet
+     */
+    public function handleGetSpreadsheetException(Throwable $e, array $sheet): void
     {
         if (($e instanceof RequestException) && ($e->getResponse() !== null)) {
             if ($e->getResponse()->getStatusCode() === 404) {
@@ -24,10 +28,10 @@ class ExceptionHandler
                     throw new UserException(
                         sprintf(
                             'Invalid OAuth grant when fetching "%s", try reauthenticating the extractor',
-                            $sheet['fileTitle']
+                            $sheet['fileTitle'],
                         ),
                         0,
-                        $e
+                        $e,
                     );
                 }
 
@@ -40,10 +44,10 @@ class ExceptionHandler
                             '"%s" (%s) for "%s"',
                             $errorSpec['error']['message'],
                             $errorSpec['error']['status'],
-                            $sheet['sheetTitle']
+                            $sheet['sheetTitle'],
                         ),
                         0,
-                        $e
+                        $e,
                     );
                 }
 
@@ -52,10 +56,10 @@ class ExceptionHandler
                         sprintf(
                             '"%s" (%s)',
                             $errorSpec['error_description'],
-                            $errorSpec['error']
+                            $errorSpec['error'],
                         ),
                         0,
-                        $e
+                        $e,
                     );
                 }
             }
@@ -63,46 +67,49 @@ class ExceptionHandler
             $userException = new UserException('Google Drive Error: ' . $e->getMessage(), 400, $e);
             $userException->setData(
                 [
-                'message' => $e->getMessage(),
-                'reason' => $e->getResponse()->getReasonPhrase(),
-                'sheet' => $sheet,
-                ]
+                    'message' => $e->getMessage(),
+                    'reason' => $e->getResponse()->getReasonPhrase(),
+                    'sheet' => $sheet,
+                ],
             );
             throw $userException;
         }
         throw new ApplicationException(
             $e->getMessage(),
             $e->getCode(),
-            $e
+            $e,
         );
     }
 
-    public function handleExportException(\Throwable $e, array $sheet): void
+    /**
+     * @param array<string,mixed> $sheet
+     */
+    public function handleExportException(Throwable $e, array $sheet): void
     {
         if (($e instanceof RequestException) && ($e->getResponse() !== null)) {
             $userException = new UserException(
                 sprintf(
                     "Error importing file - sheet: '%s - %s'",
                     $sheet['fileTitle'],
-                    $sheet['sheetTitle']
+                    $sheet['sheetTitle'],
                 ),
                 400,
-                $e
+                $e,
             );
             $userException->setData(
-                array(
-                'message' => $e->getMessage(),
-                'reason'  => $e->getResponse()->getReasonPhrase(),
-                'body'    => substr($e->getResponse()->getBody()->getContents(), 0, 300),
-                'sheet'   => $sheet
-                )
+                [
+                    'message' => $e->getMessage(),
+                    'reason'  => $e->getResponse()->getReasonPhrase(),
+                    'body'    => substr($e->getResponse()->getBody()->getContents(), 0, 300),
+                    'sheet'   => $sheet,
+                ],
             );
             throw $userException;
         }
         throw new ApplicationException(
             $e->getMessage(),
             $e->getCode(),
-            $e
+            $e,
         );
     }
 }
