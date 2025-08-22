@@ -1,5 +1,5 @@
 <?php
-
+// phpcs:ignoreFile
 declare(strict_types=1);
 
 namespace Keboola\GoogleDriveExtractor\GoogleDrive;
@@ -7,6 +7,8 @@ namespace Keboola\GoogleDriveExtractor\GoogleDrive;
 use Keboola\GoogleDriveExtractor\Exception\UserException;
 use Keboola\GoogleDriveExtractor\Http\ApiClientInterface;
 use Psr\Http\Message\ResponseInterface;
+use RuntimeException;
+
 use function GuzzleHttp\Psr7\stream_for;
 
 class Client
@@ -27,24 +29,23 @@ class Client
         return $this->api;
     }
 
-    /** @return array<string,mixed> */
     public function getFile(string $id): array
     {
         $response = $this->api->request(
             sprintf('%s/%s?supportsAllDrives=true', self::DRIVE_FILES, $id),
-            'GET',
+            'GET'
         );
         $code = $response->getStatusCode();
         $body = (string) $response->getBody();
 
         if ($code >= 400) {
-            // Drive error (permissions/not found)
-            throw new UserException('Drive API error (' . $code . ') when getting file ' . $id . ': ' . $body);
+            throw new UserException("Drive API error ($code) when getting file $id: " . $body);
         }
-        return json_decode($body, true);
+        /** @var array<string,mixed> $json */
+        $json = json_decode($body, true);
+        return $json;
     }
 
-    /** @return array<string,mixed> */
     public function createFile(string $pathname, string $title): array
     {
         // 1) Create a spreadsheet file (metadata)
@@ -57,42 +58,45 @@ class Client
                     'name' => $title,
                     'mimeType' => 'application/vnd.google-apps.spreadsheet',
                 ],
-            ],
+            ]
         );
 
+        /** @var array{id:string} $meta */
         $meta = json_decode((string) $response->getBody()->getContents(), true);
 
-        // 2) (Optional) Upload CSV content into that file
-        $mediaUrl = sprintf(
-            '%s/%s?uploadType=media&supportsAllDrives=true',
-            self::DRIVE_UPLOAD,
-            $meta['id'],
-        );
+        // 2) Upload CSV content into that file
+        $mediaUrl = sprintf('%s/%s?uploadType=media&supportsAllDrives=true', self::DRIVE_UPLOAD, $meta['id']);
+
+        $size = filesize($pathname);
+        if ($size === false) {
+            throw new RuntimeException('Cannot read file size for: ' . $pathname);
+        }
 
         $response = $this->api->request(
             $mediaUrl,
             'PATCH',
             [
                 'Content-Type'   => 'text/csv',
-                'Content-Length' => filesize($pathname),
+                'Content-Length' => (string) $size,
             ],
             [
                 'body' => stream_for(fopen($pathname, 'r')),
-            ],
+            ]
         );
 
-        return json_decode((string) $response->getBody()->getContents(), true);
+        /** @var array<string,mixed> $json */
+        $json = json_decode((string) $response->getBody()->getContents(), true);
+        return $json;
     }
 
     public function deleteFile(string $id): ResponseInterface
     {
         return $this->api->request(
             sprintf('%s/%s?supportsAllDrives=true', self::DRIVE_FILES, $id),
-            'DELETE',
+            'DELETE'
         );
     }
 
-    /** @return array<string,mixed> */
     public function getSpreadsheet(string $fileId): array
     {
         $fields = [
@@ -105,42 +109,43 @@ class Client
         $response = $this->api->request(
             $this->addFields(self::SPREADSHEETS . $fileId, $fields),
             'GET',
-            ['Accept' => 'application/json'],
+            ['Accept' => 'application/json']
         );
         $code = $response->getStatusCode();
         $body = (string) $response->getBody();
 
         if ($code >= 400) {
-            throw new UserException('Sheets API error (' . $code . ') for spreadsheet ' . $fileId . ': ' . $body);
+            throw new UserException("Sheets API error ($code) for spreadsheet $fileId: " . $body);
         }
-        return json_decode($body, true);
+        /** @var array<string,mixed> $json */
+        $json = json_decode($body, true);
+        return $json;
     }
 
-    /** @return array<string,mixed> */
     public function getSpreadsheetValues(string $spreadsheetId, string $range): array
     {
         $response = $this->api->request(
             sprintf('%s%s/values/%s', self::SPREADSHEETS, $spreadsheetId, $range),
             'GET',
-            ['Accept' => 'application/json'],
+            ['Accept' => 'application/json']
         );
         $code = $response->getStatusCode();
         $body = (string) $response->getBody();
 
         if ($code >= 400) {
-            throw new UserException(
-                'Sheets API error (' . $code . ') for values ' . $spreadsheetId . ':' . $range . ': ' . $body,
-            );
+            throw new UserException("Sheets API error ($code) for values $spreadsheetId:$range: " . $body);
         }
-        return json_decode($body, true);
+        /** @var array<string,mixed> $json */
+        $json = json_decode($body, true);
+        return $json;
     }
 
     /**
-     * @param array<int,string> $fields
+     * @param list<string> $fields
      */
     protected function addFields(string $uri, array $fields = []): string
     {
-        if (empty($fields)) {
+        if ($fields === []) {
             return $uri;
         }
         $delimiter = (strpos($uri, '?') === false) ? '?' : '&';

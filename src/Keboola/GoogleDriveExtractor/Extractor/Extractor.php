@@ -13,9 +13,7 @@ use Throwable;
 class Extractor
 {
     private Client $driveApi;
-
     private Output $output;
-
     private Logger $logger;
 
     public function __construct(Client $driveApi, Output $output, Logger $logger)
@@ -35,8 +33,7 @@ class Extractor
             /** @var ResponseInterface $response */
             $reason = $response->getReasonPhrase();
 
-            if (
-                $reason === 'insufficientPermissions'
+            if ($reason === 'insufficientPermissions'
                 || $reason === 'dailyLimitExceeded'
                 || $reason === 'usageLimits.userRateLimitExceededUnreg'
             ) {
@@ -48,7 +45,16 @@ class Extractor
     }
 
     /**
-     * @param array<int, array<string, mixed>> $sheets
+     * @param list<array{
+     *   id:int|string,
+     *   fileId:string,
+     *   fileTitle:mixed,
+     *   sheetId:int|string,
+     *   sheetTitle:mixed,
+     *   outputTable:string,
+     *   enabled:bool,
+     *   header:array<string,mixed>
+     * }> $sheets
      * @return array<string, array<string, string>>
      */
     public function run(array $sheets): array
@@ -66,7 +72,7 @@ class Extractor
                 $this->logger->info('Obtained spreadsheet metadata');
 
                 try {
-                    $this->logger->info('Extracting sheet ' . $sheet['sheetTitle']);
+                    $this->logger->info('Extracting sheet ' . (string) $sheet['sheetTitle']);
                     $this->export($spreadsheet, $sheet);
                 } catch (UserException $e) {
                     throw new UserException($e->getMessage(), 0, $e);
@@ -79,41 +85,44 @@ class Extractor
                 $exceptionHandler->handleGetSpreadsheetException($e, $sheet);
             }
 
-            $status[$sheet['fileTitle']][$sheet['sheetTitle']] = 'success';
+            $fileKey  = (string) $sheet['fileTitle'];
+            $sheetKey = (string) $sheet['sheetTitle'];
+            $status[$fileKey][$sheetKey] = 'success';
         }
 
         return $status;
     }
 
     /**
-     * @param array<string, mixed> $spreadsheet
-     * @param array<string, mixed> $sheetCfg
+     * @param array<string,mixed> $spreadsheet
+     * @param array<string,mixed> $sheetCfg
      */
     private function export(array $spreadsheet, array $sheetCfg): void
     {
         $sheet = $this->getSheetById($spreadsheet['sheets'], (string) $sheetCfg['sheetId']);
-        $rowCount = $sheet['properties']['gridProperties']['rowCount'];
-        $columnCount = $sheet['properties']['gridProperties']['columnCount'];
+        $rowCount = (int) $sheet['properties']['gridProperties']['rowCount'];
+        $columnCount = (int) $sheet['properties']['gridProperties']['columnCount'];
         $offset = 1;
         $limit = 1000;
 
         while ($offset <= $rowCount) {
-            $this->logger->info(sprintf('Extracting rows %s to %s', $offset, $offset + $limit));
+            $this->logger->info(sprintf('Extracting rows %s to %s', (string) $offset, (string) ($offset + $limit)));
             $range = $this->getRange($sheet['properties']['title'], $columnCount, $offset, $limit);
 
             $response = $this->driveApi->getSpreadsheetValues(
                 $spreadsheet['spreadsheetId'],
-                $range,
+                $range
             );
 
             if (!empty($response['values'])) {
                 if ($offset === 1) {
-                    // it is a first run
                     $csvFilename = $this->output->createCsv($sheetCfg);
-                    $this->output->createManifest($csvFilename, $sheetCfg['outputTable']);
+                    $this->output->createManifest($csvFilename, (string) $sheetCfg['outputTable']);
                 }
 
-                $this->output->write($response['values'], $offset);
+                /** @var array<int, list<string>> $values */
+                $values = $response['values'];
+                $this->output->write($values, $offset);
             }
 
             $offset += $limit;
@@ -121,8 +130,8 @@ class Extractor
     }
 
     /**
-     * @param array<int, array<string, mixed>> $sheets
-     * @return array<string, mixed>
+     * @param list<array<string,mixed>> $sheets
+     * @return array<string,mixed>
      */
     private function getSheetById(array $sheets, string $id): array
     {
@@ -135,21 +144,13 @@ class Extractor
         throw new UserException(sprintf('Sheet id "%s" not found', $id));
     }
 
-    /**
-     * Build A1-notation range with URL-encoded sheet title.
-     */
-    public function getRange(
-        string $sheetTitle,
-        int $columnCount,
-        int $rowOffset = 1,
-        int $rowLimit = 1000
-    ): string {
+    public function getRange(string $sheetTitle, int $columnCount, int $rowOffset = 1, int $rowLimit = 1000): string
+    {
         $lastColumn = $this->columnToLetter($columnCount);
 
         $start = 'A' . $rowOffset;
         $end = $lastColumn . ($rowOffset + $rowLimit - 1);
 
-        // Use rawurlencode so spaces become %20 (not '+'), matching tests and API path expectations.
         return rawurlencode($sheetTitle) . '!' . $start . ':' . $end;
     }
 
@@ -169,6 +170,5 @@ class Extractor
 
     public function refreshTokenCallback(string $accessToken, string $refreshToken): void
     {
-        // no-op
     }
 }
