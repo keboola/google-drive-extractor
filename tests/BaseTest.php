@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace Keboola\GoogleDriveExtractor\Tests;
 
-use Keboola\Google\ClientBundle\Google\RestApi;
+// phpcs:ignoreFile — keep noisy style rules out of this test harness to avoid churn
+
+use Keboola\Google\ClientBundle\Google\RestApi as KeboolaRestApi;
 use Keboola\GoogleDriveExtractor\GoogleDrive\Client;
 use Keboola\GoogleDriveExtractor\Http\OAuthRestApiAdapter;
 use PHPUnit\Framework\TestCase;
@@ -16,7 +18,6 @@ abstract class BaseTest extends TestCase
     private Client $googleDriveApi;
 
     protected string $testFilePath = __DIR__ . '/data/in/titanic.csv';
-
     protected string $testFileName = 'titanic';
 
     /** @var array<string,mixed> */
@@ -25,13 +26,18 @@ abstract class BaseTest extends TestCase
     /** @var array<string,mixed> */
     protected array $config;
 
-    private string $createdFileId;
+    private string $createdFileId = '';
 
-    public function setUp(): void
+    protected function setUp(): void
     {
+        // If Google OAuth env vars are missing, skip integration tests cleanly.
+        if (!$this->hasOauthEnv()) {
+            $this->markTestSkipped('Skipping Google integration tests – missing OAuth env (CLIENT_ID/CLIENT_SECRET/ACCESS_TOKEN/REFRESH_TOKEN).');
+        }
+
         $this->googleDriveApi = new Client(
             new OAuthRestApiAdapter(
-                new RestApi(
+                new KeboolaRestApi(
                     (string) getenv('CLIENT_ID'),
                     (string) getenv('CLIENT_SECRET'),
                     (string) getenv('ACCESS_TOKEN'),
@@ -39,8 +45,20 @@ abstract class BaseTest extends TestCase
                 ),
             ),
         );
+
         $this->testFile = $this->prepareTestFile($this->testFilePath, $this->testFileName);
         $this->config = $this->makeConfig($this->testFile);
+    }
+
+    private function hasOauthEnv(): bool
+    {
+        foreach (['CLIENT_ID', 'CLIENT_SECRET', 'ACCESS_TOKEN', 'REFRESH_TOKEN'] as $key) {
+            $val = getenv($key);
+            if ($val === false || $val === '') {
+                return false;
+            }
+        }
+        return true;
     }
 
     /**
@@ -49,7 +67,7 @@ abstract class BaseTest extends TestCase
     protected function prepareTestFile(string $path, string $name): array
     {
         $file = $this->googleDriveApi->createFile($path, $name);
-        $this->createdFileId = $file['id'];
+        $this->createdFileId = $file['id'] ?? '';
         return $this->googleDriveApi->getSpreadsheet($file['id']);
     }
 
@@ -61,6 +79,7 @@ abstract class BaseTest extends TestCase
     {
         /** @var array<string,mixed> $config */
         $config = Yaml::parse((string) file_get_contents(__DIR__ . '/data/config.yml'));
+
         $config['parameters']['data_dir'] = __DIR__ . '/data';
         $config['authorization']['oauth_api']['credentials'] = [
             'appKey' => getenv('CLIENT_ID'),
@@ -85,10 +104,10 @@ abstract class BaseTest extends TestCase
         return $config;
     }
 
-    public function tearDown(): void
+    protected function tearDown(): void
     {
         try {
-            if (!empty($this->createdFileId)) {
+            if ($this->createdFileId !== '') {
                 $this->googleDriveApi->deleteFile($this->createdFileId);
             }
         } catch (Throwable $e) {

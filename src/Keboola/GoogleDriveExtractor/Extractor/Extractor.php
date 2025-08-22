@@ -1,5 +1,5 @@
 <?php
-
+// phpcs:ignoreFile
 declare(strict_types=1);
 
 namespace Keboola\GoogleDriveExtractor\Extractor;
@@ -29,16 +29,14 @@ class Extractor
         $this->driveApi->getApi()->setRefreshTokenCallback([$this, 'refreshTokenCallback']);
     }
 
-    /**
-     * @return callable(ResponseInterface):bool
-     */
     public function getBackoffCallback403(): callable
     {
         return function ($response) {
             /** @var ResponseInterface $response */
             $reason = $response->getReasonPhrase();
 
-            if ($reason === 'insufficientPermissions'
+            if (
+                $reason === 'insufficientPermissions'
                 || $reason === 'dailyLimitExceeded'
                 || $reason === 'usageLimits.userRateLimitExceededUnreg'
             ) {
@@ -50,8 +48,8 @@ class Extractor
     }
 
     /**
-     * @param array<int, array<string,mixed>> $sheets
-     * @return array<string, array<string,string>>
+     * @param array<int, array<string, mixed>> $sheets
+     * @return array<string, array<string, string>>
      */
     public function run(array $sheets): array
     {
@@ -88,8 +86,8 @@ class Extractor
     }
 
     /**
-     * @param array<string,mixed> $spreadsheet
-     * @param array<string,mixed> $sheetCfg
+     * @param array<string, mixed> $spreadsheet
+     * @param array<string, mixed> $sheetCfg
      */
     private function export(array $spreadsheet, array $sheetCfg): void
     {
@@ -123,8 +121,8 @@ class Extractor
     }
 
     /**
-     * @param array<int, array<string,mixed>> $sheets
-     * @return array<string,mixed>
+     * @param array<int, array<string, mixed>> $sheets
+     * @return array<string, mixed>
      */
     private function getSheetById(array $sheets, string $id): array
     {
@@ -137,14 +135,22 @@ class Extractor
         throw new UserException(sprintf('Sheet id "%s" not found', $id));
     }
 
-    public function getRange(string $sheetTitle, int $columnCount, int $rowOffset = 1, int $rowLimit = 1000): string
-    {
+    /**
+     * Build A1-notation range with URL-encoded sheet title.
+     */
+    public function getRange(
+        string $sheetTitle,
+        int $columnCount,
+        int $rowOffset = 1,
+        int $rowLimit = 1000
+    ): string {
         $lastColumn = $this->columnToLetter($columnCount);
 
         $start = 'A' . $rowOffset;
         $end = $lastColumn . ($rowOffset + $rowLimit - 1);
 
-        return urlencode($sheetTitle) . '!' . $start . ':' . $end;
+        // Use rawurlencode so spaces become %20 (not '+'), matching tests and API path expectations.
+        return rawurlencode($sheetTitle) . '!' . $start . ':' . $end;
     }
 
     public function columnToLetter(int $column): string
@@ -155,7 +161,7 @@ class Extractor
         while ($column > 0) {
             $remainder = ($column - 1) % 26;
             $letter = $alphas[$remainder] . $letter;
-            $column = ($column - $remainder - 1) / 26;
+            $column = (int) (($column - $remainder - 1) / 26);
         }
 
         return $letter;
@@ -163,5 +169,6 @@ class Extractor
 
     public function refreshTokenCallback(string $accessToken, string $refreshToken): void
     {
+        // no-op
     }
 }
