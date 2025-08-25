@@ -44,14 +44,13 @@ class Application
             return $logger;
         };
 
-        $saRaw = $config['authorization']['#serviceAccountJson']
-            ?? $config['authorization']['serviceAccountJson']
+        $saRaw = $config['parameters']['#serviceAccountJson']
             ?? null;
         $hasSa = !empty($saRaw);
         $hasOauth = isset($config['authorization']['oauth_api']['credentials']['#data']);
 
         if (!$hasSa && !$hasOauth) {
-            $msg = 'Missing authorization: provide either authorization.#serviceAccountJson'
+            $msg = 'Missing authorization: provide either parameters.#serviceAccountJson'
                 . ' or authorization.oauth_api.credentials.#data';
             throw new UserException($msg);
         }
@@ -59,7 +58,7 @@ class Application
         if ($hasSa) {
             $sa = is_string($saRaw) ? json_decode($saRaw, true) : $saRaw;
             if (!is_array($sa) || empty($sa['client_email']) || empty($sa['private_key'])) {
-                throw new UserException('Invalid Service Account JSON in authorization.#serviceAccountJson');
+                throw new UserException('Invalid Service Account JSON in parameters.#serviceAccountJson');
             }
 
             $scopes = [
@@ -89,7 +88,7 @@ class Application
                     $creds['#appSecret'],
                     $tokenData['access_token'] ?? '',
                     $tokenData['refresh_token'],
-                ); // ← trailing comma added
+                );
                 return new OAuthRestApiAdapter($rest);
             };
         }

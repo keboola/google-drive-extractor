@@ -87,6 +87,7 @@ class ConfigDefinition implements ConfigurationInterface
                         ->end()
                     ->end()
                 ->end()
+                ->variableNode('#serviceAccountJson')->defaultNull()->end()
             ->end();
 
         return $treeBuilder;
