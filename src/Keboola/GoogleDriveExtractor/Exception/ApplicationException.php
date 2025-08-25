@@ -4,21 +4,31 @@ declare(strict_types=1);
 
 namespace Keboola\GoogleDriveExtractor\Exception;
 
-class ApplicationException extends \Exception
-{
-    protected array $data;
+use Exception;
+use Throwable;
 
-    public function __construct(string $message = '', int $code = 0, ?\Throwable $previous = null, ?array $data = [])
+/** @phpstan-type ExtraData array<string, mixed> */
+class ApplicationException extends Exception
+{
+    /** @var ExtraData */
+    protected $data = [];
+
+    /**
+     * @param ExtraData $data
+     */
+    public function __construct(string $message, int $code = 0, ?Throwable $previous = null, array $data = [])
     {
-        $this->setData((array) $data);
         parent::__construct($message, $code, $previous);
+        $this->data = $data;
     }
 
+    /** @param ExtraData $data */
     public function setData(array $data): void
     {
         $this->data = $data;
     }
 
+    /** @return ExtraData */
     public function getData(): array
     {
         return $this->data;

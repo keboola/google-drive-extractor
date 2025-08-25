@@ -1,9 +1,10 @@
 <?php
-
+// phpcs:ignoreFile
 declare(strict_types=1);
 
 namespace Keboola\GoogleDriveExtractor\Tests\Extractor;
 
+use Exception;
 use GuzzleHttp\Exception\RequestException;
 use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Psr7\Response;
@@ -11,17 +12,19 @@ use Keboola\GoogleDriveExtractor\Exception\ApplicationException;
 use Keboola\GoogleDriveExtractor\Exception\UserException;
 use Keboola\GoogleDriveExtractor\Extractor\ExceptionHandler;
 use PHPUnit\Framework\TestCase;
+use Throwable;
 
 class ExceptionHandleTest extends TestCase
 {
     /**
      * @psalm-param class-string<\Throwable> $expectedExceptionClass
      * @dataProvider provideExceptionsForGetSpreadsheet
+     * @param array<string,mixed> $sheet
      */
     public function testHandlingOfExceptions(
         string $expectedExceptionClass,
         string $expectedExceptionMessage,
-        \Throwable $caughtException,
+        Throwable $caughtException,
         array $sheet
     ): void {
         $handler = new ExceptionHandler();
@@ -30,6 +33,9 @@ class ExceptionHandleTest extends TestCase
         $handler->handleGetSpreadsheetException($caughtException, $sheet);
     }
 
+    /**
+     * @return array<string,array{0:class-string<\Throwable>,1:string,2:Throwable,3:array<string,mixed>}>
+     */
     public function provideExceptionsForGetSpreadsheet(): array
     {
         return [
@@ -117,9 +123,7 @@ class ExceptionHandleTest extends TestCase
             'other random exception' => [
                 ApplicationException::class,
                 'Timeout',
-                new \Exception(
-                    'Timeout'
-                ),
+                new Exception('Timeout'),
                 [
                     'id' => 2,
                     'fileId' => '1y_XXXXXXXXXXX',
@@ -134,7 +138,6 @@ class ExceptionHandleTest extends TestCase
             'exception with another response array ' => [
                 UserException::class,
                 '"The caller does not have permission" (PERMISSION_DENIED) for "Title XXXXXX"',
-
                 new RequestException(
                     // phpcs:disable Generic.Files.LineLength
                     'Client error: `POST https://sheets.googleapis.com/v4/spreadsheets/123` resulted in a `403 Forbidden` response: {"error": {"code": 403,"message": "The caller does not have permission","status": "PERMISSION_DENIED"}}',
@@ -159,11 +162,12 @@ class ExceptionHandleTest extends TestCase
     /**
      * @psalm-param class-string<\Throwable> $expectedExceptionClass
      * @dataProvider provideExceptionsForExport
+     * @param array<string,mixed> $sheet
      */
     public function testExportExceptionHandling(
         string $expectedExceptionClass,
         string $expectedExceptionMessage,
-        \Throwable $caughtException,
+        Throwable $caughtException,
         array $sheet
     ): void {
         $handler = new ExceptionHandler();
@@ -172,6 +176,9 @@ class ExceptionHandleTest extends TestCase
         $handler->handleExportException($caughtException, $sheet);
     }
 
+    /**
+     * @return array<string,array{0:class-string<\Throwable>,1:string,2:Throwable,3:array<string,mixed>}>
+     */
     public function provideExceptionsForExport(): array
     {
         return [
