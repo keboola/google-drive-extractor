@@ -18,6 +18,7 @@ parameters:
       sheetTitle: SHEET_TITLE
       outputTable: FILE_TITLE
       enabled: true
+      columnRange: "A:AE"  # Optional: limit extraction to specific columns
 ```
 
 ## OAuth Registration
