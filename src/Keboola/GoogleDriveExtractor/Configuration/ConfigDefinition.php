@@ -55,6 +55,10 @@ class ConfigDefinition implements ConfigurationInterface
                             ->scalarNode('columnRange')
                                 ->validate()
                                     ->ifTrue(function ($v) {
+                                        // Allow empty string for backwards compatibility
+                                        if ($v === '') {
+                                            return false;
+                                        }
                                         return !preg_match('/^[A-Z]+:[A-Z]+$/', $v);
                                     })
                                     ->thenInvalid('Column range must be in format "A:E" (letter:letter)')
