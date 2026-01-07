@@ -19,6 +19,8 @@ parameters:
       outputTable: FILE_TITLE
       enabled: true
       columnRange: "A:AE"  # Optional: limit extraction to specific columns
+      header:
+        rows: 1            # Use row 1 as header (default). Set to 0 for no header (generates A, B, C, ...)
 ```
 
 ## OAuth Registration
