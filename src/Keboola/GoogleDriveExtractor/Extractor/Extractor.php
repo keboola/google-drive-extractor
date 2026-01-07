@@ -117,7 +117,11 @@ class Extractor
             if (!empty($response['values'])) {
                 if ($offset === 1) {
                     // it is a first run
-                    $csvFilename = $this->output->createCsv($sheetCfg);
+                    // Pass column range info to output for header generation
+                    $sheetCfgWithRange = $sheetCfg;
+                    $sheetCfgWithRange['_startColumn'] = $startColumn;
+                    $sheetCfgWithRange['_endColumn'] = $endColumn;
+                    $csvFilename = $this->output->createCsv($sheetCfgWithRange);
                     $this->output->createManifest($csvFilename, $sheetCfg['outputTable']);
                 }
 

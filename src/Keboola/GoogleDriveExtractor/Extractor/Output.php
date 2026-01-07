@@ -56,8 +56,11 @@ class Output
                 $firstRow = reset($data);
                 $columnCount = is_array($firstRow) ? count($firstRow) : 0;
                 $this->header = [];
-                for ($i = 1; $i <= $columnCount; $i++) {
-                    $this->header[] = $this->columnToLetter($i);
+
+                // Use actual column positions if columnRange was specified
+                $startColumn = $this->sheetCfg['_startColumn'] ?? 1;
+                for ($i = 0; $i < $columnCount; $i++) {
+                    $this->header[] = $this->columnToLetter($startColumn + $i);
                 }
                 $headerLength = $columnCount;
                 // Write the generated header as first row
