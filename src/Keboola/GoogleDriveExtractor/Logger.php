@@ -6,8 +6,9 @@ namespace Keboola\GoogleDriveExtractor;
 
 use Monolog\Formatter\LineFormatter;
 use Monolog\Handler\StreamHandler;
+use Monolog\Logger as MonologLogger;
 
-class Logger extends \Monolog\Logger
+class Logger extends MonologLogger
 {
     public function __construct(string $name = '', bool $debug = false)
     {
@@ -24,8 +25,8 @@ class Logger extends \Monolog\Logger
             $formatter = new LineFormatter("%message%\n");
         }
 
-        $errHandler = new StreamHandler('php://stderr', \Monolog\Logger::NOTICE, false);
-        $level = $debug ? \Monolog\Logger::DEBUG : \Monolog\Logger::INFO;
+        $errHandler = new StreamHandler('php://stderr', MonologLogger::NOTICE, false);
+        $level = $debug ? MonologLogger::DEBUG : MonologLogger::INFO;
         $handler = new StreamHandler('php://stdout', $level);
         $handler->setFormatter($formatter);
 

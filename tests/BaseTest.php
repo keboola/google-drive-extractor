@@ -8,6 +8,7 @@ use Keboola\Google\ClientBundle\Google\RestApi;
 use Keboola\GoogleDriveExtractor\GoogleDrive\Client;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Yaml\Yaml;
+use Throwable;
 
 abstract class BaseTest extends TestCase
 {
@@ -17,8 +18,14 @@ abstract class BaseTest extends TestCase
 
     protected string $testFileName = 'titanic';
 
+    /**
+     * @var array<mixed>
+     */
     protected array $testFile;
 
+    /**
+     * @var array<mixed>
+     */
     protected array $config;
 
     public function setUp(): void
@@ -28,19 +35,26 @@ abstract class BaseTest extends TestCase
                 (string) getenv('CLIENT_ID'),
                 (string) getenv('CLIENT_SECRET'),
                 (string) getenv('ACCESS_TOKEN'),
-                (string) getenv('REFRESH_TOKEN')
-            )
+                (string) getenv('REFRESH_TOKEN'),
+            ),
         );
         $this->testFile = $this->prepareTestFile($this->testFilePath, $this->testFileName);
         $this->config = $this->makeConfig($this->testFile);
     }
 
+    /**
+     * @return array<mixed>
+     */
     protected function prepareTestFile(string $path, string $name): array
     {
         $file = $this->googleDriveApi->createFile($path, $name);
         return $this->googleDriveApi->getSpreadsheet($file['id']);
     }
 
+    /**
+     * @param array<mixed> $testFile
+     * @return array<mixed>
+     */
     protected function makeConfig(array $testFile): array
     {
         $config = Yaml::parse((string) file_get_contents(__DIR__ . '/data/config.yml'));
@@ -52,7 +66,7 @@ abstract class BaseTest extends TestCase
                 [
                 'access_token' => getenv('ACCESS_TOKEN'),
                 'refresh_token' => getenv('REFRESH_TOKEN'),
-                ]
+                ],
             ),
         ];
         $config['parameters']['sheets'][0] = [
@@ -68,6 +82,10 @@ abstract class BaseTest extends TestCase
         return $config;
     }
 
+    /**
+     * @param array<mixed> $testFile
+     * @return array<mixed>
+     */
     protected function makeConfigWithServiceAccount(array $testFile): array
     {
         $config = Yaml::parse((string) file_get_contents(__DIR__ . '/data/config.yml'));
@@ -92,7 +110,7 @@ abstract class BaseTest extends TestCase
     {
         try {
             $this->googleDriveApi->deleteFile($this->testFile['id']);
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
         }
     }
 

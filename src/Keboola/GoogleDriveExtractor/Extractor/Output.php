@@ -15,8 +15,14 @@ class Output
 
     private CsvWriter $csv;
 
+    /**
+     * @var array<mixed>|null
+     */
     private ?array $header;
 
+    /**
+     * @var array<mixed>
+     */
     private array $sheetCfg;
 
     public function __construct(string $dataDir, string $outputBucket)
@@ -25,6 +31,9 @@ class Output
         $this->outputBucket = $outputBucket;
     }
 
+    /**
+     * @param array<mixed> $sheet
+     */
     public function createCsv(array $sheet): string
     {
         $outTablesDir = $this->dataDir . '/out/tables';
@@ -42,6 +51,9 @@ class Output
         return $filename;
     }
 
+    /**
+     * @param array<mixed> $data
+     */
     public function write(array $data, int $offset): void
     {
         if (!($this->csv instanceof CsvWriter)) {
@@ -109,6 +121,10 @@ class Output
         }
     }
 
+    /**
+     * @param array<mixed> $header
+     * @return array<mixed>
+     */
     protected function normalizeCsvHeader(array $header): array
     {
         foreach ($header as &$col) {
@@ -117,6 +133,9 @@ class Output
         return $header;
     }
 
+    /**
+     * @param array<mixed> $data
+     */
     private function getHeaderLength(array $data, int $headerRowNum): int
     {
         $headerLength = 0;

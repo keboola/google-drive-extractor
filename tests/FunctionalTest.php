@@ -24,7 +24,7 @@ class FunctionalTest extends BaseTest
 
         $this->assertFileEqualsIgnoringCase(
             $this->testFilePath,
-            $this->dataPath . '/out/tables/' . $this->getOutputFileName($fileId, $sheetId)
+            $this->dataPath . '/out/tables/' . $this->getOutputFileName($fileId, $sheetId),
         );
 
         $expectedManifest = <<<YAML
@@ -36,8 +36,8 @@ YAML;
         $this->assertEquals(
             $expectedManifest,
             file_get_contents(
-                $this->dataPath . '/out/tables/' . $this->getOutputFileName($fileId, $sheetId) . '.manifest'
-            )
+                $this->dataPath . '/out/tables/' . $this->getOutputFileName($fileId, $sheetId) . '.manifest',
+            ),
         );
     }
 
@@ -51,14 +51,14 @@ YAML;
 
         $this->assertFileEqualsIgnoringCase(
             $this->testFilePath,
-            $this->dataPath . '/out/tables/' . $this->getOutputFileName($fileId, $sheetId)
+            $this->dataPath . '/out/tables/' . $this->getOutputFileName($fileId, $sheetId),
         );
 
         $this->assertEquals(
             '{"destination":"in.c-google-drive-extractor-testcfg1.titanic","incremental":false}',
             file_get_contents(
-                $this->dataPath . '/out/tables/' . $this->getOutputFileName($fileId, $sheetId) . '.manifest'
-            )
+                $this->dataPath . '/out/tables/' . $this->getOutputFileName($fileId, $sheetId) . '.manifest',
+            ),
         );
     }
 
@@ -101,8 +101,8 @@ YAML;
         $this->assertEquals(
             '"Weird_Chars","Second_column","count_poops_per_day"' . PHP_EOL,
             file_get_contents(
-                $this->dataPath . '/out/tables/' . $this->getOutputFileName($fileId, $sheetId)
-            )
+                $this->dataPath . '/out/tables/' . $this->getOutputFileName($fileId, $sheetId),
+            ),
         );
 
         unlink($filePath);
@@ -130,8 +130,8 @@ YAML;
         $this->assertEquals(
             $headerLine . PHP_EOL,
             file_get_contents(
-                $this->dataPath . '/out/tables/' . $this->getOutputFileName($fileId, $sheetId)
-            )
+                $this->dataPath . '/out/tables/' . $this->getOutputFileName($fileId, $sheetId),
+            ),
         );
 
         unlink($filePath);
@@ -163,7 +163,7 @@ YAML;
 
         $this->assertFileEquals(
             __DIR__ . '/data/expectedFiles/multiple_header.csv',
-            $this->dataPath . '/out/tables/' . $this->getOutputFileName($fileId, $sheetId)
+            $this->dataPath . '/out/tables/' . $this->getOutputFileName($fileId, $sheetId),
         );
     }
 
@@ -178,7 +178,7 @@ YAML;
             case 'json':
                 file_put_contents(
                     $this->dataPath . '/config.json',
-                    json_encode($this->config)
+                    json_encode($this->config),
                 );
                 break;
             case 'yml':
@@ -220,7 +220,7 @@ YAML;
 
         $this->assertFileEqualsIgnoringCase(
             $this->testFilePath,
-            $this->dataPath . '/out/tables/' . $this->getOutputFileName($fileId, $sheetId)
+            $this->dataPath . '/out/tables/' . $this->getOutputFileName($fileId, $sheetId),
         );
     }
 }

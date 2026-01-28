@@ -6,6 +6,7 @@ namespace Keboola\GoogleDriveExtractor\GoogleDrive;
 
 use GuzzleHttp\Psr7\Response;
 use Keboola\Google\ClientBundle\Google\RestApi as GoogleApi;
+use function GuzzleHttp\Psr7\stream_for;
 
 class Client
 {
@@ -27,16 +28,22 @@ class Client
         return $this->api;
     }
 
+    /**
+     * @return array<mixed>
+     */
     public function getFile(string $id): array
     {
         $response = $this->api->request(
             self::DRIVE_FILES . '/' . $id,
-            'GET'
+            'GET',
         );
 
         return json_decode($response->getBody()->getContents(), true);
     }
 
+    /**
+     * @return array<mixed>
+     */
     public function createFile(string $pathname, string $title): array
     {
         $body = [
@@ -52,7 +59,7 @@ class Client
             ],
             [
                 'json' => $body,
-            ]
+            ],
         );
 
         $responseJson = json_decode((string) $response->getBody()->getContents(), true);
@@ -67,8 +74,8 @@ class Client
                 'Content-Length' => filesize($pathname),
             ],
             [
-                'body' => \GuzzleHttp\Psr7\stream_for(fopen($pathname, 'r')),
-            ]
+                'body' => stream_for(fopen($pathname, 'r')),
+            ],
         );
 
         return json_decode($response->getBody()->getContents(), true);
@@ -78,10 +85,13 @@ class Client
     {
         return $this->api->request(
             sprintf('%s/%s', self::DRIVE_FILES, $id),
-            'DELETE'
+            'DELETE',
         );
     }
 
+    /**
+     * @return array<mixed>
+     */
     public function getSpreadsheet(string $fileId): array
     {
         $fields = [
@@ -96,12 +106,15 @@ class Client
             'GET',
             [
                 'Accept' => 'application/json',
-            ]
+            ],
         );
 
         return json_decode($response->getBody()->getContents(), true);
     }
 
+    /**
+     * @return array<mixed>
+     */
     public function getSpreadsheetValues(string $spreadsheetId, string $range): array
     {
         $response = $this->api->request(
@@ -109,17 +122,20 @@ class Client
                 '%s%s/values/%s',
                 self::SPREADSHEETS,
                 $spreadsheetId,
-                $range
+                $range,
             ),
             'GET',
             [
                 'Accept' => 'application/json',
-            ]
+            ],
         );
 
         return json_decode($response->getBody()->getContents(), true);
     }
 
+    /**
+     * @param array<string> $fields
+     */
     protected function addFields(string $uri, array $fields = []): string
     {
         if (empty($fields)) {

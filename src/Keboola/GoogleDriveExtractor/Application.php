@@ -22,6 +22,9 @@ class Application
 {
     private Container $container;
 
+    /**
+     * @param array<mixed> $config
+     */
     public function __construct(array $config)
     {
         $container = new Container();
@@ -61,7 +64,7 @@ class Application
                     $config['authorization']['oauth_api']['credentials']['appKey'],
                     $config['authorization']['oauth_api']['credentials']['#appSecret'],
                     $tokenData['access_token'],
-                    $tokenData['refresh_token']
+                    $tokenData['refresh_token'],
                 );
             };
         } else {
@@ -77,13 +80,16 @@ class Application
             return new Extractor(
                 $c['google_drive_client'],
                 $c['output'],
-                $c['logger']
+                $c['logger'],
             );
         };
 
         $this->container = $container;
     }
 
+    /**
+     * @return array<mixed>
+     */
     public function run(): array
     {
         $actionMethod = $this->container['action'] . 'Action';
@@ -119,12 +125,15 @@ class Application
                 $e,
                 [
                     'response' => $response->getBody()->getContents(),
-                ]
+                ],
             );
         }
     }
 
     // phpcs:disable SlevomatCodingStandard.Classes.UnusedPrivateElements.UnusedMethod
+    /**
+     * @return array<mixed>
+     */
     private function runAction(): array
     {
         /** @var Extractor $extractor */
@@ -137,13 +146,17 @@ class Application
         ];
     }
 
+    /**
+     * @param array<mixed> $parameters
+     * @return array<mixed>
+     */
     private function validateParameters(array $parameters): array
     {
         try {
             $processor = new Processor();
             return $processor->processConfiguration(
                 new ConfigDefinition(),
-                [$parameters]
+                [$parameters],
             );
         } catch (InvalidConfigurationException $e) {
             throw new UserException($e->getMessage(), 400, $e);
