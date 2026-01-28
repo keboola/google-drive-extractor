@@ -203,4 +203,24 @@ YAML;
         }
         $csvWriter->writeRow($headerLine);
     }
+
+    public function testServiceAccountAuthentication(): void
+    {
+        if (!getenv('SERVICE_ACCOUNT_JSON')) {
+            $this->markTestSkipped('SERVICE_ACCOUNT_JSON environment variable not set');
+        }
+
+        $this->config = $this->makeConfigWithServiceAccount($this->testFile);
+
+        $process = $this->runProcess();
+        $this->assertEquals(0, $process->getExitCode(), $process->getErrorOutput());
+
+        $fileId = $this->config['parameters']['sheets'][0]['fileId'];
+        $sheetId = $this->config['parameters']['sheets'][0]['sheetId'];
+
+        $this->assertFileEqualsIgnoringCase(
+            $this->testFilePath,
+            $this->dataPath . '/out/tables/' . $this->getOutputFileName($fileId, $sheetId)
+        );
+    }
 }

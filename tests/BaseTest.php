@@ -68,6 +68,26 @@ abstract class BaseTest extends TestCase
         return $config;
     }
 
+    protected function makeConfigWithServiceAccount(array $testFile): array
+    {
+        $config = Yaml::parse((string) file_get_contents(__DIR__ . '/data/config.yml'));
+        $config['parameters']['data_dir'] = __DIR__ . '/data';
+        $config['parameters']['#serviceAccount'] = getenv('SERVICE_ACCOUNT_JSON');
+        $config['parameters']['sheets'][0] = [
+            'id' => 0,
+            'fileId' => $testFile['spreadsheetId'],
+            'fileTitle' => $testFile['properties']['title'],
+            'sheetId' => $testFile['sheets'][0]['properties']['sheetId'],
+            'sheetTitle' => $testFile['sheets'][0]['properties']['title'],
+            'outputTable' => $this->testFileName,
+            'enabled' => true,
+        ];
+        // Remove OAuth authorization when using service account
+        unset($config['authorization']);
+
+        return $config;
+    }
+
     public function tearDown(): void
     {
         try {
