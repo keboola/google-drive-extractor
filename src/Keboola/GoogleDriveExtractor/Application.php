@@ -59,12 +59,16 @@ class Application
         } elseif (isset($config['authorization']['oauth_api']['credentials']['#data'])) {
             // Fall back to OAuth authentication
             $tokenData = json_decode($config['authorization']['oauth_api']['credentials']['#data'], true);
-            $container['google_client'] = function () use ($config, $tokenData) {
-                return new RestApi(
+            if (!is_array($tokenData)) {
+                throw new UserException('Invalid OAuth token data');
+            }
+            $container['google_client'] = function ($container) use ($config, $tokenData) {
+                return RestApi::createWithOAuth(
                     $config['authorization']['oauth_api']['credentials']['appKey'],
                     $config['authorization']['oauth_api']['credentials']['#appSecret'],
-                    $tokenData['access_token'],
-                    $tokenData['refresh_token'],
+                    $tokenData['access_token'] ?? '',
+                    $tokenData['refresh_token'] ?? '',
+                    $container['logger'],
                 );
             };
         } else {
@@ -92,6 +96,7 @@ class Application
      */
     public function run(): array
     {
+        assert(is_string($this->container['action']));
         $actionMethod = $this->container['action'] . 'Action';
         if (!method_exists($this, $actionMethod)) {
             throw new UserException(sprintf("Action '%s' does not exist.", $this->container['action']));
@@ -108,7 +113,9 @@ class Application
             }
             if ($e->getCode() === 403) {
                 if (strtolower($response->getReasonPhrase()) === 'forbidden') {
-                    $this->container['logger']->warning("You don't have access to Google Drive resource.");
+                    /** @var Logger $logger */
+                    $logger = $this->container['logger'];
+                    $logger->warning("You don't have access to Google Drive resource.");
                     return [];
                 }
                 throw new UserException('Reason: ' . $response->getReasonPhrase(), $e->getCode(), $e);
@@ -138,6 +145,8 @@ class Application
     {
         /** @var Extractor $extractor */
         $extractor = $this->container['extractor'];
+        assert(is_array($this->container['parameters']));
+        assert(is_array($this->container['parameters']['sheets']));
         $extracted = $extractor->run($this->container['parameters']['sheets']);
 
         return [

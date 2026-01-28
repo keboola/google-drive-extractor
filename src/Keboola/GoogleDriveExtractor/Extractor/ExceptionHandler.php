@@ -18,13 +18,15 @@ class ExceptionHandler
     {
         if (($e instanceof RequestException) && ($e->getResponse() !== null)) {
             if ($e->getResponse()->getStatusCode() === 404) {
+                assert(is_string($sheet['sheetTitle']));
                 throw new UserException(sprintf('File "%s" not found in Google Drive', $sheet['sheetTitle']), 404, $e);
             }
 
             $errorSpec = json_decode((string) $e->getResponse()->getBody()->getContents(), true);
 
-            if ($errorSpec && array_key_exists('error', $errorSpec)) {
+            if (is_array($errorSpec) && array_key_exists('error', $errorSpec)) {
                 if ($errorSpec['error'] === 'invalid_grant') {
+                    assert(is_string($sheet['fileTitle']));
                     throw new UserException(
                         sprintf(
                             'Invalid OAuth grant when fetching "%s", try reauthenticating the extractor',
@@ -39,6 +41,9 @@ class ExceptionHandler
                     && count($errorSpec['error']) > 1
                     && !isset($errorSpec['error_description'])
                 ) {
+                    assert(is_string($errorSpec['error']['message']));
+                    assert(is_string($errorSpec['error']['status']));
+                    assert(is_string($sheet['sheetTitle']));
                     throw new UserException(
                         sprintf(
                             '"%s" (%s) for "%s"',
@@ -87,6 +92,8 @@ class ExceptionHandler
     public function handleExportException(Throwable $e, array $sheet): void
     {
         if (($e instanceof RequestException) && ($e->getResponse() !== null)) {
+            assert(is_string($sheet['fileTitle']));
+            assert(is_string($sheet['sheetTitle']));
             $userException = new UserException(
                 sprintf(
                     "Error importing file - sheet: '%s - %s'",

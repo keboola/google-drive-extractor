@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace Keboola\GoogleDriveExtractor\GoogleDrive;
 
 use GuzzleHttp\Psr7\Response;
+use GuzzleHttp\Psr7\Utils;
 use Keboola\Google\ClientBundle\Google\RestApi as GoogleApi;
-use function GuzzleHttp\Psr7\stream_for;
 
 class Client
 {
@@ -38,7 +38,9 @@ class Client
             'GET',
         );
 
-        return json_decode($response->getBody()->getContents(), true);
+        $decoded = json_decode($response->getBody()->getContents(), true);
+        assert(is_array($decoded));
+        return $decoded;
     }
 
     /**
@@ -63,6 +65,8 @@ class Client
         );
 
         $responseJson = json_decode((string) $response->getBody()->getContents(), true);
+        assert(is_array($responseJson));
+        assert(is_string($responseJson['id']));
 
         $mediaUrl = sprintf('%s/%s?uploadType=media', self::DRIVE_UPLOAD, $responseJson['id']);
 
@@ -74,11 +78,13 @@ class Client
                 'Content-Length' => filesize($pathname),
             ],
             [
-                'body' => stream_for(fopen($pathname, 'r')),
+                'body' => Utils::streamFor(fopen($pathname, 'r')),
             ],
         );
 
-        return json_decode($response->getBody()->getContents(), true);
+        $decoded = json_decode($response->getBody()->getContents(), true);
+        assert(is_array($decoded));
+        return $decoded;
     }
 
     public function deleteFile(string $id): Response
@@ -109,7 +115,9 @@ class Client
             ],
         );
 
-        return json_decode($response->getBody()->getContents(), true);
+        $decoded = json_decode($response->getBody()->getContents(), true);
+        assert(is_array($decoded));
+        return $decoded;
     }
 
     /**
@@ -130,7 +138,9 @@ class Client
             ],
         );
 
-        return json_decode($response->getBody()->getContents(), true);
+        $decoded = json_decode($response->getBody()->getContents(), true);
+        assert(is_array($decoded));
+        return $decoded;
     }
 
     /**

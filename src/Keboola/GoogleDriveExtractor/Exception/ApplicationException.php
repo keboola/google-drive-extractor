@@ -10,10 +10,13 @@ use Throwable;
 class ApplicationException extends Exception
 {
     /**
-     * @var array<mixed>
+     * @var array<string, mixed>
      */
     protected array $data;
 
+    /**
+     * @param array<string, mixed>|null $data
+     */
     public function __construct(string $message = '', int $code = 0, ?Throwable $previous = null, ?array $data = [])
     {
         $this->setData((array) $data);
@@ -21,7 +24,7 @@ class ApplicationException extends Exception
     }
 
     /**
-     * @param array<mixed> $data
+     * @param array<string, mixed> $data
      */
     public function setData(array $data): void
     {
@@ -29,7 +32,7 @@ class ApplicationException extends Exception
     }
 
     /**
-     * @return array<mixed>
+     * @return array<string, mixed>
      */
     public function getData(): array
     {

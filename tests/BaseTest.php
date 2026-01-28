@@ -30,14 +30,13 @@ abstract class BaseTest extends TestCase
 
     public function setUp(): void
     {
-        $this->googleDriveApi = new Client(
-            new RestApi(
-                (string) getenv('CLIENT_ID'),
-                (string) getenv('CLIENT_SECRET'),
-                (string) getenv('ACCESS_TOKEN'),
-                (string) getenv('REFRESH_TOKEN'),
-            ),
+        $api = RestApi::createWithOAuth(
+            (string) getenv('CLIENT_ID'),
+            (string) getenv('CLIENT_SECRET'),
+            (string) getenv('ACCESS_TOKEN'),
+            (string) getenv('REFRESH_TOKEN'),
         );
+        $this->googleDriveApi = new Client($api);
         $this->testFile = $this->prepareTestFile($this->testFilePath, $this->testFileName);
         $this->config = $this->makeConfig($this->testFile);
     }

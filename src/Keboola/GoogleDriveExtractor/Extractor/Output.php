@@ -61,6 +61,9 @@ class Output
         }
 
         if ($this->header === null) {
+            assert(is_array($this->sheetCfg['header']));
+            assert(isset($this->sheetCfg['header']['rows']));
+            assert(is_int($this->sheetCfg['header']['rows']));
             $headerRows = $this->sheetCfg['header']['rows'];
 
             if ($headerRows === 0) {
@@ -82,6 +85,8 @@ class Output
             } else {
                 // Standard behavior - use specified row as header
                 $headerRowNum = $headerRows - 1;
+                assert(isset($data[$headerRowNum]));
+                assert(is_array($data[$headerRowNum]));
                 $this->header = $data[$headerRowNum];
                 $headerLength = $this->getHeaderLength($data, (int) $headerRowNum);
             }
@@ -89,7 +94,9 @@ class Output
             $headerLength = count($this->header);
         }
 
+        assert(is_array($this->sheetCfg['header']));
         foreach ($data as $k => $row) {
+            assert(is_array($row));
             // Skip header row if rows > 0 and it's the header row
             if ($this->sheetCfg['header']['rows'] > 0 && $k === 0 && $offset === 1) {
                 if (!isset($this->sheetCfg['header']['sanitize']) || $this->sheetCfg['header']['sanitize'] !== false) {
@@ -128,6 +135,7 @@ class Output
     protected function normalizeCsvHeader(array $header): array
     {
         foreach ($header as &$col) {
+            assert(is_string($col));
             $col = Utility::sanitize($col);
         }
         return $header;
@@ -140,6 +148,8 @@ class Output
     {
         $headerLength = 0;
         for ($i = 0; $i <= $headerRowNum; $i++) {
+            assert(isset($data[$i]));
+            assert(is_array($data[$i]));
             $headerLength = max($headerLength, count($data[$i]));
         }
         return $headerLength;

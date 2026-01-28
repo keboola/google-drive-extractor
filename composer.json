@@ -20,7 +20,7 @@
   "require-dev": {
     "keboola/coding-standard": ">=7.0.2",
     "php-parallel-lint/php-parallel-lint": "^1.2",
-    "phpstan/phpstan": "^0.12.64",
+    "phpstan/phpstan": "^1.0",
     "phpunit/phpunit": "^9.5"
   },
   "autoload": {
@@ -35,7 +35,7 @@
   },
   "scripts": {
     "tests": "phpunit --log-junit=build/logs/phpunit.junit.xml",
-    "phpstan": "phpstan analyse --no-progress --level=max src tests -c phpstan.neon",
+    "phpstan": "phpstan analyse --no-progress -c phpstan.neon",
     "phpcs": "phpcs --extensions=php src tests",
     "phpcbf": "phpcbf --extensions=php src tests",
     "phplint": "parallel-lint -j 10 --exclude vendor .",

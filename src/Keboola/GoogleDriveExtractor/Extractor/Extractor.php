@@ -56,9 +56,14 @@ class Extractor
         $exceptionHandler = new ExceptionHandler();
 
         foreach ($sheets as $sheet) {
+            assert(is_array($sheet));
             if (!$sheet['enabled']) {
                 continue;
             }
+
+            assert(is_string($sheet['fileId']));
+            assert(is_string($sheet['sheetTitle']));
+            assert(is_string($sheet['fileTitle']));
 
             try {
                 $spreadsheet = $this->driveApi->getSpreadsheet($sheet['fileId']);
@@ -90,7 +95,20 @@ class Extractor
      */
     private function export(array $spreadsheet, array $sheetCfg): void
     {
+        assert(is_array($spreadsheet['sheets']));
+        assert(is_string($sheetCfg['sheetId']) || is_int($sheetCfg['sheetId']));
+
         $sheet = $this->getSheetById($spreadsheet['sheets'], (string) $sheetCfg['sheetId']);
+
+        assert(is_array($sheet['properties']));
+        assert(is_array($sheet['properties']['gridProperties']));
+        assert(isset($sheet['properties']['gridProperties']['rowCount']));
+        assert(isset($sheet['properties']['gridProperties']['columnCount']));
+        assert(isset($sheet['properties']['title']));
+        assert(is_int($sheet['properties']['gridProperties']['rowCount']));
+        assert(is_int($sheet['properties']['gridProperties']['columnCount']));
+        assert(is_string($sheet['properties']['title']));
+
         $rowCount = $sheet['properties']['gridProperties']['rowCount'];
         $columnCount = $sheet['properties']['gridProperties']['columnCount'];
         $offset = 1;
@@ -100,6 +118,7 @@ class Extractor
         $startColumn = 1;
         $endColumn = $columnCount;
         if (!empty($sheetCfg['columnRange'])) {
+            assert(is_string($sheetCfg['columnRange']));
             [$startColumn, $endColumn] = $this->parseColumnRange(
                 $sheetCfg['columnRange'],
                 $columnCount,
@@ -118,6 +137,8 @@ class Extractor
                 $endColumn,
             );
 
+            assert(is_string($spreadsheet['spreadsheetId']));
+
             $response = $this->driveApi->getSpreadsheetValues(
                 $spreadsheet['spreadsheetId'],
                 $range,
@@ -131,9 +152,11 @@ class Extractor
                     $sheetCfgWithRange['_startColumn'] = $startColumn;
                     $sheetCfgWithRange['_endColumn'] = $endColumn;
                     $csvFilename = $this->output->createCsv($sheetCfgWithRange);
+                    assert(is_string($sheetCfg['outputTable']));
                     $this->output->createManifest($csvFilename, $sheetCfg['outputTable']);
                 }
 
+                assert(is_array($response['values']));
                 $this->output->write($response['values'], $offset);
             }
 
@@ -148,6 +171,8 @@ class Extractor
     private function getSheetById(array $sheets, string $id): array
     {
         foreach ($sheets as $sheet) {
+            assert(is_array($sheet));
+            assert(isset($sheet['properties']['sheetId']));
             if ((string) $sheet['properties']['sheetId'] === $id) {
                 return $sheet;
             }
