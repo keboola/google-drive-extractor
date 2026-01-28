@@ -19,8 +19,12 @@ class ExtractorTest extends TestCase
 
     public function setUp(): void
     {
-        $api = new RestApi((string) getenv('CLIENT_ID'), (string) getenv('CLIENT_SECRET'));
-        $api->setCredentials((string) getenv('ACCESS_TOKEN'), (string) getenv('REFRESH_TOKEN'));
+        $api = RestApi::createWithOAuth(
+            (string) getenv('CLIENT_ID'),
+            (string) getenv('CLIENT_SECRET'),
+            (string) getenv('ACCESS_TOKEN'),
+            (string) getenv('REFRESH_TOKEN'),
+        );
         $this->googleDriveClient = new Client($api);
         $output = new Output('/data', 'in.c-ex-google-drive');
         $logger = new Logger('tests');

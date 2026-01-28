@@ -15,8 +15,12 @@ class ClientTest extends BaseTest
     public function setUp(): void
     {
         parent::setUp();
-        $api = new RestApi((string) getenv('CLIENT_ID'), (string) getenv('CLIENT_SECRET'));
-        $api->setCredentials((string) getenv('ACCESS_TOKEN'), (string) getenv('REFRESH_TOKEN'));
+        $api = RestApi::createWithOAuth(
+            (string) getenv('CLIENT_ID'),
+            (string) getenv('CLIENT_SECRET'),
+            (string) getenv('ACCESS_TOKEN'),
+            (string) getenv('REFRESH_TOKEN'),
+        );
         $this->client = new Client($api);
     }
 

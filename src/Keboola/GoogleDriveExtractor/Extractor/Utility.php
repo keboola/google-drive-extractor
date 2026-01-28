@@ -32,7 +32,7 @@ class Utility
             return $string;
         }
         if (self::seemsUtf8($string)) {
-            $chars = array(
+            $chars = [
                 // Decompositions for Latin-1 Supplement
                 chr(195).chr(128) => 'A', chr(195).chr(129) => 'A',
                 chr(195).chr(130) => 'A', chr(195).chr(131) => 'A',
@@ -134,8 +134,8 @@ class Utility
                 'Ä' => 'Ae', 'ä' => 'ae', 'Ü' => 'Ue', 'ü' => 'ue',
                 'Ö' => 'Oe', 'ö' => 'oe', 'ß' => 'ss',
                 // Norwegian characters
-                'Å'=>'Aa','Æ'=>'Ae','Ø'=>'O','æ'=>'a','ø'=>'o','å'=>'aa'
-            );
+                'Å'=>'Aa','Æ'=>'Ae','Ø'=>'O','æ'=>'a','ø'=>'o','å'=>'aa',
+            ];
             $string = strtr($string, $chars);
         } else {
             // Assume ISO-8859-1 if not UTF-8
@@ -151,11 +151,11 @@ class Utility
                 .chr(252).chr(253).chr(255);
             $chars['out'] = 'EfSZszYcYuAAAAAACEEEEIIIINOOOOOOUUUUYaaaaaaceeeeiiiinoooooouuuuyy';
             $string = strtr($string, $chars['in'], $chars['out']);
-            $doubleChars['in'] = array(
+            $doubleChars['in'] = [
                 chr(140), chr(156), chr(198), chr(208), chr(222),
-                chr(223), chr(230), chr(240), chr(254)
-            );
-            $doubleChars['out'] = array('OE', 'oe', 'AE', 'DH', 'TH', 'ss', 'ae', 'dh', 'th');
+                chr(223), chr(230), chr(240), chr(254),
+            ];
+            $doubleChars['out'] = ['OE', 'oe', 'AE', 'DH', 'TH', 'ss', 'ae', 'dh', 'th'];
             $string = str_replace($doubleChars['in'], $doubleChars['out'], $string);
         }
         return $string;
@@ -165,7 +165,6 @@ class Utility
      *
      * By bmorel at ssi dot fr
      *
-     * @param  string $string
      * @return boolean $bool
      */
     private static function seemsUtf8(string $string): bool

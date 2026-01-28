@@ -1,5 +1,9 @@
+includes:
+    - phpstan-baseline.neon
+
 parameters:
     checkMissingIterableValueType: false
-    excludes_analyse:
+    excludePaths:
+        - vendor/symfony/filesystem/Filesystem.php
         - src/Keboola/GoogleDriveExtractor/Configuration/ConfigDefinition.php
     ignoreErrors:

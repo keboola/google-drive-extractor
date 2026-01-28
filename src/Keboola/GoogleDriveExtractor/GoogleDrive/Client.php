@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Keboola\GoogleDriveExtractor\GoogleDrive;
 
 use GuzzleHttp\Psr7\Response;
+use GuzzleHttp\Psr7\Utils;
 use Keboola\Google\ClientBundle\Google\RestApi as GoogleApi;
 
 class Client
@@ -31,7 +32,7 @@ class Client
     {
         $response = $this->api->request(
             self::DRIVE_FILES . '/' . $id,
-            'GET'
+            'GET',
         );
 
         return json_decode($response->getBody()->getContents(), true);
@@ -52,7 +53,7 @@ class Client
             ],
             [
                 'json' => $body,
-            ]
+            ],
         );
 
         $responseJson = json_decode((string) $response->getBody()->getContents(), true);
@@ -67,8 +68,8 @@ class Client
                 'Content-Length' => filesize($pathname),
             ],
             [
-                'body' => \GuzzleHttp\Psr7\stream_for(fopen($pathname, 'r')),
-            ]
+                'body' => Utils::streamFor(fopen($pathname, 'r')),
+            ],
         );
 
         return json_decode($response->getBody()->getContents(), true);
@@ -78,7 +79,7 @@ class Client
     {
         return $this->api->request(
             sprintf('%s/%s', self::DRIVE_FILES, $id),
-            'DELETE'
+            'DELETE',
         );
     }
 
@@ -96,7 +97,7 @@ class Client
             'GET',
             [
                 'Accept' => 'application/json',
-            ]
+            ],
         );
 
         return json_decode($response->getBody()->getContents(), true);
@@ -109,12 +110,12 @@ class Client
                 '%s%s/values/%s',
                 self::SPREADSHEETS,
                 $spreadsheetId,
-                $range
+                $range,
             ),
             'GET',
             [
                 'Accept' => 'application/json',
-            ]
+            ],
         );
 
         return json_decode($response->getBody()->getContents(), true);

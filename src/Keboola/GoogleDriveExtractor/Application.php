@@ -57,11 +57,11 @@ class Application
             // Fall back to OAuth authentication
             $tokenData = json_decode($config['authorization']['oauth_api']['credentials']['#data'], true);
             $container['google_client'] = function () use ($config, $tokenData) {
-                return new RestApi(
+                return RestApi::createWithOAuth(
                     $config['authorization']['oauth_api']['credentials']['appKey'],
                     $config['authorization']['oauth_api']['credentials']['#appSecret'],
                     $tokenData['access_token'],
-                    $tokenData['refresh_token']
+                    $tokenData['refresh_token'],
                 );
             };
         } else {
@@ -77,7 +77,7 @@ class Application
             return new Extractor(
                 $c['google_drive_client'],
                 $c['output'],
-                $c['logger']
+                $c['logger'],
             );
         };
 
@@ -119,7 +119,7 @@ class Application
                 $e,
                 [
                     'response' => $response->getBody()->getContents(),
-                ]
+                ],
             );
         }
     }
@@ -143,7 +143,7 @@ class Application
             $processor = new Processor();
             return $processor->processConfiguration(
                 new ConfigDefinition(),
-                [$parameters]
+                [$parameters],
             );
         } catch (InvalidConfigurationException $e) {
             throw new UserException($e->getMessage(), 400, $e);

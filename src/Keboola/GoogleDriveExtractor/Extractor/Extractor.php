@@ -8,6 +8,7 @@ use Keboola\GoogleDriveExtractor\Exception\UserException;
 use Keboola\GoogleDriveExtractor\GoogleDrive\Client;
 use Monolog\Logger;
 use Psr\Http\Message\ResponseInterface;
+use Throwable;
 
 class Extractor
 {
@@ -64,12 +65,12 @@ class Extractor
                     $this->export($spreadsheet, $sheet);
                 } catch (UserException $e) {
                     throw new UserException($e->getMessage(), 0, $e);
-                } catch (\Throwable $e) {
+                } catch (Throwable $e) {
                     $exceptionHandler->handleExportException($e, $sheet);
                 }
             } catch (UserException $e) {
                 throw new UserException($e->getMessage(), 0, $e);
-            } catch (\Throwable $e) {
+            } catch (Throwable $e) {
                 $exceptionHandler->handleGetSpreadsheetException($e, $sheet);
             }
 
@@ -94,7 +95,7 @@ class Extractor
             [$startColumn, $endColumn] = $this->parseColumnRange(
                 $sheetCfg['columnRange'],
                 $columnCount,
-                $sheet['properties']['title']
+                $sheet['properties']['title'],
             );
         }
 
@@ -106,12 +107,12 @@ class Extractor
                 $offset,
                 $limit,
                 $startColumn,
-                $endColumn
+                $endColumn,
             );
 
             $response = $this->driveApi->getSpreadsheetValues(
                 $spreadsheet['spreadsheetId'],
-                $range
+                $range,
             );
 
             if (!empty($response['values'])) {
@@ -149,7 +150,7 @@ class Extractor
         int $rowOffset = 1,
         int $rowLimit = 1000,
         ?int $startColumn = null,
-        ?int $endColumn = null
+        ?int $endColumn = null,
     ): string {
         $firstColumn = $this->columnToLetter($startColumn ?? 1);
         $lastColumn = $this->columnToLetter($endColumn ?? $columnCount);
@@ -202,7 +203,7 @@ class Extractor
             throw new UserException(sprintf(
                 'Invalid column range "%s" for sheet "%s". Expected format: "A:E"',
                 $columnRange,
-                $sheetTitle
+                $sheetTitle,
             ));
         }
 
@@ -216,7 +217,7 @@ class Extractor
                 $columnRange,
                 $sheetTitle,
                 $parts[0],
-                $parts[1]
+                $parts[1],
             ));
         }
 
@@ -224,7 +225,7 @@ class Extractor
             throw new UserException(sprintf(
                 'Invalid column range "%s" for sheet "%s": start column must be at least "A"',
                 $columnRange,
-                $sheetTitle
+                $sheetTitle,
             ));
         }
 
@@ -236,7 +237,7 @@ class Extractor
                 $sheetTitle,
                 $sheetColumnCount,
                 $this->columnToLetter($sheetColumnCount),
-                $parts[1]
+                $parts[1],
             ));
         }
 

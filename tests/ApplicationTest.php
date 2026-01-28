@@ -26,7 +26,7 @@ class ApplicationTest extends BaseTest
             '%s/data/out/tables/%s_%s.csv',
             __DIR__,
             $this->testFile['spreadsheetId'],
-            $this->testFile['sheets'][0]['properties']['sheetId']
+            $this->testFile['sheets'][0]['properties']['sheetId'],
         );
 
         $manifestPath = $outputPath . '.manifest';
@@ -39,7 +39,7 @@ class ApplicationTest extends BaseTest
         $outputTableId = sprintf(
             '%s.%s',
             $this->config['parameters']['outputBucket'],
-            $this->config['parameters']['sheets'][0]['outputTable']
+            $this->config['parameters']['sheets'][0]['outputTable'],
         );
 
         $this->assertEquals($outputTableId, $manifest['destination']);

@@ -8,6 +8,7 @@ use Keboola\Google\ClientBundle\Google\RestApi;
 use Keboola\GoogleDriveExtractor\GoogleDrive\Client;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Yaml\Yaml;
+use Throwable;
 
 abstract class BaseTest extends TestCase
 {
@@ -24,12 +25,12 @@ abstract class BaseTest extends TestCase
     public function setUp(): void
     {
         $this->googleDriveApi = new Client(
-            new RestApi(
+            RestApi::createWithOAuth(
                 (string) getenv('CLIENT_ID'),
                 (string) getenv('CLIENT_SECRET'),
                 (string) getenv('ACCESS_TOKEN'),
-                (string) getenv('REFRESH_TOKEN')
-            )
+                (string) getenv('REFRESH_TOKEN'),
+            ),
         );
         $this->testFile = $this->prepareTestFile($this->testFilePath, $this->testFileName);
         $this->config = $this->makeConfig($this->testFile);
@@ -52,7 +53,7 @@ abstract class BaseTest extends TestCase
                 [
                 'access_token' => getenv('ACCESS_TOKEN'),
                 'refresh_token' => getenv('REFRESH_TOKEN'),
-                ]
+                ],
             ),
         ];
         $config['parameters']['sheets'][0] = [
@@ -92,7 +93,7 @@ abstract class BaseTest extends TestCase
     {
         try {
             $this->googleDriveApi->deleteFile($this->testFile['id']);
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
         }
     }
 
