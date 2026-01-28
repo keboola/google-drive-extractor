@@ -5,7 +5,7 @@
   "description": "Keboola Google Drive Extractor",
   "keywords": ["keboola", "google", "drive", "spreadsheets", "extractor"],
   "require": {
-    "php": "^7.4",
+    "php": "^8.1",
     "ext-json": "*",
     "guzzlehttp/guzzle": "^7.0",
     "keboola/csv": "^2.1",
