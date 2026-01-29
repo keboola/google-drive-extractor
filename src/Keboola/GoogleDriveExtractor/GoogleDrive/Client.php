@@ -83,6 +83,29 @@ class Client
         );
     }
 
+    /**
+     * @return array<mixed>
+     */
+    public function shareFile(string $fileId, string $email): array
+    {
+        $response = $this->api->request(
+            sprintf('%s/%s/permissions', self::DRIVE_FILES, $fileId),
+            'POST',
+            [
+                'Content-Type' => 'application/json',
+            ],
+            [
+                'json' => [
+                    'type' => 'user',
+                    'role' => 'reader',
+                    'emailAddress' => $email,
+                ],
+            ],
+        );
+
+        return (array) json_decode($response->getBody()->getContents(), true);
+    }
+
     public function getSpreadsheet(string $fileId): array
     {
         $fields = [

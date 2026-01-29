@@ -39,7 +39,21 @@ abstract class BaseTest extends TestCase
     protected function prepareTestFile(string $path, string $name): array
     {
         $file = $this->googleDriveApi->createFile($path, $name);
-        return $this->googleDriveApi->getSpreadsheet($file['id']);
+        $spreadsheet = $this->googleDriveApi->getSpreadsheet($file['id']);
+
+        // Share with service account if configured
+        $serviceAccountJson = getenv('SERVICE_ACCOUNT_JSON');
+        if ($serviceAccountJson) {
+            $serviceAccountData = json_decode($serviceAccountJson, true);
+            if (is_array($serviceAccountData)
+                && isset($serviceAccountData['client_email'])
+                && is_string($serviceAccountData['client_email'])
+            ) {
+                $this->googleDriveApi->shareFile($file['id'], $serviceAccountData['client_email']);
+            }
+        }
+
+        return $spreadsheet;
     }
 
     protected function makeConfig(array $testFile): array
