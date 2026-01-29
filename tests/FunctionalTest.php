@@ -207,7 +207,7 @@ YAML;
     public function testServiceAccountAuthentication(): void
     {
         if (!getenv('SERVICE_ACCOUNT_JSON')) {
-            $this->markTestSkipped('SERVICE_ACCOUNT_JSON environment variable not set');
+            $this->fail('SERVICE_ACCOUNT_JSON environment variable not set');
         }
 
         $this->config = $this->makeConfigWithServiceAccount($this->testFile);
