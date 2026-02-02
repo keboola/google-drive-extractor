@@ -34,18 +34,39 @@ class Application
             }
             return $logger;
         };
-        if (!isset($config['authorization']['oauth_api']['credentials']['#data'])) {
-            throw new UserException('Missing authorization data');
+
+        // Check for service account authentication first
+        if (isset($config['parameters']['#serviceAccount']) && !empty($config['parameters']['#serviceAccount'])) {
+            $serviceAccountJson = json_decode($config['parameters']['#serviceAccount'], true);
+            if (!is_array($serviceAccountJson)) {
+                throw new UserException('Invalid service account JSON');
+            }
+            $scopes = [
+                'https://www.googleapis.com/auth/drive',
+                'https://www.googleapis.com/auth/spreadsheets',
+            ];
+
+            $container['google_client'] = function ($container) use ($serviceAccountJson, $scopes) {
+                return RestApi::createWithServiceAccount(
+                    $serviceAccountJson,
+                    $scopes,
+                    $container['logger'],
+                );
+            };
+        } elseif (isset($config['authorization']['oauth_api']['credentials']['#data'])) {
+            // Fall back to OAuth authentication
+            $tokenData = json_decode($config['authorization']['oauth_api']['credentials']['#data'], true);
+            $container['google_client'] = function () use ($config, $tokenData) {
+                return RestApi::createWithOAuth(
+                    $config['authorization']['oauth_api']['credentials']['appKey'],
+                    $config['authorization']['oauth_api']['credentials']['#appSecret'],
+                    $tokenData['access_token'],
+                    $tokenData['refresh_token'],
+                );
+            };
+        } else {
+            throw new UserException('Missing authorization data (OAuth or Service Account)');
         }
-        $tokenData = json_decode($config['authorization']['oauth_api']['credentials']['#data'], true);
-        $container['google_client'] = function () use ($config, $tokenData) {
-            return new RestApi(
-                $config['authorization']['oauth_api']['credentials']['appKey'],
-                $config['authorization']['oauth_api']['credentials']['#appSecret'],
-                $tokenData['access_token'],
-                $tokenData['refresh_token']
-            );
-        };
         $container['google_drive_client'] = function ($c) {
             return new Client($c['google_client']);
         };
@@ -56,7 +77,7 @@ class Application
             return new Extractor(
                 $c['google_drive_client'],
                 $c['output'],
-                $c['logger']
+                $c['logger'],
             );
         };
 
@@ -98,7 +119,7 @@ class Application
                 $e,
                 [
                     'response' => $response->getBody()->getContents(),
-                ]
+                ],
             );
         }
     }
@@ -122,7 +143,7 @@ class Application
             $processor = new Processor();
             return $processor->processConfiguration(
                 new ConfigDefinition(),
-                [$parameters]
+                [$parameters],
             );
         } catch (InvalidConfigurationException $e) {
             throw new UserException($e->getMessage(), 400, $e);

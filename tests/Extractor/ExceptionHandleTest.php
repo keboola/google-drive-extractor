@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Keboola\GoogleDriveExtractor\Tests\Extractor;
 
+use Exception;
 use GuzzleHttp\Exception\RequestException;
 use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Psr7\Response;
@@ -11,6 +12,7 @@ use Keboola\GoogleDriveExtractor\Exception\ApplicationException;
 use Keboola\GoogleDriveExtractor\Exception\UserException;
 use Keboola\GoogleDriveExtractor\Extractor\ExceptionHandler;
 use PHPUnit\Framework\TestCase;
+use Throwable;
 
 class ExceptionHandleTest extends TestCase
 {
@@ -21,8 +23,8 @@ class ExceptionHandleTest extends TestCase
     public function testHandlingOfExceptions(
         string $expectedExceptionClass,
         string $expectedExceptionMessage,
-        \Throwable $caughtException,
-        array $sheet
+        Throwable $caughtException,
+        array $sheet,
     ): void {
         $handler = new ExceptionHandler();
         $this->expectException($expectedExceptionClass);
@@ -40,7 +42,7 @@ class ExceptionHandleTest extends TestCase
                     // phpcs:disable Generic.Files.LineLength
                     'Client error: `POST https://www.googleapis.com/oauth2/v3/token` resulted in a `400 Bad Request` response: { "error": "invalid_grant", "error_description": "Bad Request" }',
                     new Request('whatever', 'git'),
-                    new Response(400, [], '{ "error": "invalid_grant", "error_description": "Bad Request" }')
+                    new Response(400, [], '{ "error": "invalid_grant", "error_description": "Bad Request" }'),
                 ),
                 [
                     'id' => 2,
@@ -60,7 +62,7 @@ class ExceptionHandleTest extends TestCase
                     // phpcs:disable Generic.Files.LineLength
                     'Client error: `POST https://www.googleapis.com/oauth2/v3/token` resulted in a `400 Bad Request` response: { "error": "invalid_grant", "error_description": "Bad Request" }',
                     new Request('whatever', 'git'),
-                    new Response(404, [], '{}')
+                    new Response(404, [], '{}'),
                 ),
                 [
                     'id' => 2,
@@ -80,7 +82,7 @@ class ExceptionHandleTest extends TestCase
                 new RequestException(
                     'Client error: `POST https://www.googleapis.com/oauth2/v3/token` resulted in a `400 Bad Request` response: { "error": "invalid_grant", "error_description": "Bad Request" }',
                     new Request('whatever', 'git'),
-                    new Response(403, [], '{}')
+                    new Response(403, [], '{}'),
                 ),
                 [
                     'id' => 2,
@@ -101,7 +103,7 @@ class ExceptionHandleTest extends TestCase
                     'Client error: `POST https://www.googleapis.com/oauth2/v3/token` resulted in a `400 Bad Request` response: { "error": "out_of_range", "error_description": "The column AX is not in the sheet" }',
                     new Request('whatever', 'git'),
                     // phpcs:disable Generic.Files.LineLength
-                    new Response(403, [], '{ "error": "out_of_range", "error_description": "The column AX is not in the sheet" }')
+                    new Response(403, [], '{ "error": "out_of_range", "error_description": "The column AX is not in the sheet" }'),
                 ),
                 [
                     'id' => 2,
@@ -117,8 +119,8 @@ class ExceptionHandleTest extends TestCase
             'other random exception' => [
                 ApplicationException::class,
                 'Timeout',
-                new \Exception(
-                    'Timeout'
+                new Exception(
+                    'Timeout',
                 ),
                 [
                     'id' => 2,
@@ -140,7 +142,7 @@ class ExceptionHandleTest extends TestCase
                     'Client error: `POST https://sheets.googleapis.com/v4/spreadsheets/123` resulted in a `403 Forbidden` response: {"error": {"code": 403,"message": "The caller does not have permission","status": "PERMISSION_DENIED"}}',
                     new Request('whatever', 'git'),
                     // phpcs:disable Generic.Files.LineLength
-                    new Response(400, [], '{ "error": { "code": 403, "message": "The caller does not have permission", "status": "PERMISSION_DENIED" } }')
+                    new Response(400, [], '{ "error": { "code": 403, "message": "The caller does not have permission", "status": "PERMISSION_DENIED" } }'),
                 ),
                 [
                     'id' => 2,
@@ -163,8 +165,8 @@ class ExceptionHandleTest extends TestCase
     public function testExportExceptionHandling(
         string $expectedExceptionClass,
         string $expectedExceptionMessage,
-        \Throwable $caughtException,
-        array $sheet
+        Throwable $caughtException,
+        array $sheet,
     ): void {
         $handler = new ExceptionHandler();
         $this->expectException($expectedExceptionClass);
@@ -182,7 +184,7 @@ class ExceptionHandleTest extends TestCase
                     'Some eeror message... Resulted in HTTP 429',
                     new Request('whatever', 'git'),
                     // phpcs:disable Generic.Files.LineLength
-                    new Response(429, [], '{"error": {"errors": [{"domain": "usageLimits","reason": "rateLimitExceeded","message": "Rate Limit Exceeded"}],"code": 429,"message": "Rate Limit Exceeded"}}')
+                    new Response(429, [], '{"error": {"errors": [{"domain": "usageLimits","reason": "rateLimitExceeded","message": "Rate Limit Exceeded"}],"code": 429,"message": "Rate Limit Exceeded"}}'),
                 ),
                 [
                     'id' => 2,

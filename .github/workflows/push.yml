@@ -16,6 +16,7 @@ env:
   CLIENT_SECRET: ${{ secrets.CLIENT_SECRET }}
   ACCESS_TOKEN: ${{ secrets.ACCESS_TOKEN }}
   REFRESH_TOKEN: ${{ secrets.REFRESH_TOKEN }}
+  SERVICE_ACCOUNT_JSON: ${{ secrets.SERVICE_ACCOUNT_JSON }}
 
   # DockerHub login
   DOCKERHUB_USER: "keboolabot"
@@ -95,6 +96,7 @@ jobs:
           -e CLIENT_SECRET \
           -e ACCESS_TOKEN \
           -e REFRESH_TOKEN \
+          -e SERVICE_ACCOUNT_JSON \
           ${{env.APP_IMAGE}} \
           composer ci
 

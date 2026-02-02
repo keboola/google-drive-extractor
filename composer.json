@@ -5,11 +5,11 @@
   "description": "Keboola Google Drive Extractor",
   "keywords": ["keboola", "google", "drive", "spreadsheets", "extractor"],
   "require": {
-    "php": "^7.4",
+    "php": "^8.1",
     "ext-json": "*",
-    "guzzlehttp/guzzle": "^6.0",
+    "guzzlehttp/guzzle": "^7.0",
     "keboola/csv": "^2.1",
-    "keboola/google-client-bundle": "^5.3",
+    "keboola/google-client-bundle": "^6.0",
     "keboola/php-temp": "^2.0",
     "monolog/monolog": "^2.2",
     "pimple/pimple": "^3.3",
@@ -20,7 +20,7 @@
   "require-dev": {
     "keboola/coding-standard": ">=7.0.2",
     "php-parallel-lint/php-parallel-lint": "^1.2",
-    "phpstan/phpstan": "^0.12.64",
+    "phpstan/phpstan": "^1.0",
     "phpunit/phpunit": "^9.5"
   },
   "autoload": {
@@ -52,6 +52,12 @@
   },
   "config": {
     "sort-packages": true,
-    "process-timeout": 3600
+    "process-timeout": 3600,
+    "allow-plugins": {
+      "dealerdirect/phpcodesniffer-composer-installer": true
+    },
+    "platform": {
+      "php": "8.1.34"
+    }
   }
 }

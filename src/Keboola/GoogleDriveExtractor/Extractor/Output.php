@@ -49,20 +49,42 @@ class Output
         }
 
         if ($this->header === null) {
-            $headerRowNum = $this->sheetCfg['header']['rows'] - 1;
-            $this->header = $data[$headerRowNum];
-            $headerLength = $this->getHeaderLength($data, (int) $headerRowNum);
+            $headerRows = $this->sheetCfg['header']['rows'];
+
+            if ($headerRows === 0) {
+                // No header in data - generate column letters (A, B, C, ...)
+                $firstRow = reset($data);
+                $columnCount = is_array($firstRow) ? count($firstRow) : 0;
+                $this->header = [];
+
+                // Use actual column positions if columnRange was specified
+                $startColumn = $this->sheetCfg['_startColumn'] ?? 1;
+                for ($i = 0; $i < $columnCount; $i++) {
+                    $this->header[] = $this->columnToLetter($startColumn + $i);
+                }
+                $headerLength = $columnCount;
+                // Write the generated header as first row
+                if ($offset === 1) {
+                    $this->csv->writeRow($this->header);
+                }
+            } else {
+                // Standard behavior - use specified row as header
+                $headerRowNum = $headerRows - 1;
+                $this->header = $data[$headerRowNum];
+                $headerLength = $this->getHeaderLength($data, (int) $headerRowNum);
+            }
         } else {
             $headerLength = count($this->header);
         }
 
         foreach ($data as $k => $row) {
-            // backward compatibility fix
-            if ($this->sheetCfg['header']['rows'] === 1 && $k === 0 && $offset === 1) {
+            // Skip header row if rows > 0 and it's the header row
+            if ($this->sheetCfg['header']['rows'] > 0 && $k === 0 && $offset === 1) {
                 if (!isset($this->sheetCfg['header']['sanitize']) || $this->sheetCfg['header']['sanitize'] !== false) {
                     $row = $this->normalizeCsvHeader($row);
                 }
             }
+
             $rowLength = count($row);
             if ($rowLength > $headerLength) {
                 $row = array_slice($row, 0, $headerLength);
@@ -102,5 +124,19 @@ class Output
             $headerLength = max($headerLength, count($data[$i]));
         }
         return $headerLength;
+    }
+
+    private function columnToLetter(int $column): string
+    {
+        $alphas = range('A', 'Z');
+        $letter = '';
+
+        while ($column > 0) {
+            $remainder = ($column - 1) % 26;
+            $letter = $alphas[$remainder] . $letter;
+            $column = ($column - $remainder - 1) / 26;
+        }
+
+        return $letter;
     }
 }
