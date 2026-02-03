@@ -78,9 +78,11 @@ class Output
         }
 
         foreach ($data as $k => $row) {
-            // Skip header row if rows > 0 and it's the header row
-            if ($this->sheetCfg['header']['rows'] > 0 && $k === 0 && $offset === 1) {
-                if (!isset($this->sheetCfg['header']['sanitize']) || $this->sheetCfg['header']['sanitize'] !== false) {
+            // backward compatibility fix - only sanitize when header.rows = 1
+            if ($this->sheetCfg['header']['rows'] === 1 && $k === 0 && $offset === 1) {
+                $shouldSanitize = !isset($this->sheetCfg['header']['sanitize'])
+                    || $this->sheetCfg['header']['sanitize'] !== false;
+                if ($shouldSanitize) {
                     $row = $this->normalizeCsvHeader($row);
                 }
             }
