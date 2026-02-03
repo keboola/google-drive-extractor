@@ -4,7 +4,20 @@
 
 Extract data from Google Drive files and spreadsheets.
 
-## Example configuration
+## Configuration
+
+### Headers
+
+The `header.rows` parameter controls how the extractor interprets and processes the first rows of your spreadsheet:
+
+| Value | Behavior |
+|-------|----------|
+| `-1` | Auto-generates Excel-style column headers (A, B, C, ..., Z, AA, AB, ...) based on the maximum column count across all data rows. All spreadsheet rows are written to the output. |
+| `0` | Auto-generates column headers based on the first row's column count. All spreadsheet rows are written to the output. |
+| `1` | Uses the first row as the header reference. The header row is sanitized for storage compatibility. All rows are written to the output. |
+| `2+` | Uses the specified row as the header reference (e.g., `2` uses the second row). The header row is sanitized. Column count is determined from the maximum across all rows up to and including the header row. All rows are written to the output. |
+
+### Example configuration
 
 ```yaml
 parameters:
@@ -20,7 +33,8 @@ parameters:
       enabled: true
       columnRange: "Z:AE"  # Optional: limit extraction to specific columns
       header:
-        rows: 0            # Set to 0 for no header (generates column letters: Z, AA, AB, AC, AD, AE)
+        rows: -1           # Auto-generate headers, treat all rows as data
+        sanitize: true     # Optional: disable header sanitization (only for rows >= 1)
 ```
 
 ## OAuth Registration
