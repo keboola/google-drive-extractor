@@ -78,8 +78,16 @@ class Output
         }
 
         foreach ($data as $k => $row) {
-            // backward compatibility fix - only sanitize when header.rows = 1
-            if ($this->sheetCfg['header']['rows'] === 1 && $k === 0 && $offset === 1) {
+            $headerRows = $this->sheetCfg['header']['rows'];
+
+            // Skip rows before the header row (rows 0 to header.rows - 2)
+            if ($headerRows > 0 && $k < ($headerRows - 1) && $offset === 1) {
+                continue;
+            }
+
+            // Sanitize only the actual header row (row at index header.rows - 1)
+            // Data rows (>= header.rows) are NOT sanitized, preserving dates like "01/2015"
+            if ($headerRows > 0 && $k === ($headerRows - 1) && $offset === 1) {
                 $shouldSanitize = !isset($this->sheetCfg['header']['sanitize'])
                     || $this->sheetCfg['header']['sanitize'] !== false;
                 if ($shouldSanitize) {
