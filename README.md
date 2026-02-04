@@ -10,13 +10,14 @@ Extract data from Google Drive files and spreadsheets.
 
 The `header.rows` parameter controls how the extractor interprets and processes the first rows of your spreadsheet:
 
+**Note:** Google now includes auto-generated column letters (A, B, C, ...) at row 0 in API responses.
+
 | Value | Behavior |
 |-------|----------|
-| `0` | Uses the first row as the header. If Google includes auto-generated column letters (A, B, C, ...), they will be used as headers. All rows are written to the output. |
-| `1` | Uses the first actual spreadsheet row as the header reference. This row is sanitized for storage compatibility. All rows are written to the output. |
-| `2+` | Uses the specified spreadsheet row as the header reference (e.g., `2` uses the second row). The header row is sanitized. Column count is determined from the maximum across all rows up to and including the header row. All rows are written to the output. |
-
-**Note:** The extractor automatically detects whether Google has included auto-generated column letters (A, B, C, ...) in the response and adjusts indexing accordingly, maintaining backwards compatibility.
+| `0` | Uses row 0 (Google's column letters: A, B, C, ...) as the header. All rows including the column letters are written to the output. No sanitization. |
+| `1` | Uses row 1 (first actual spreadsheet row) as the header reference. **Skips row 0** (column letters). Row 1 is sanitized for storage compatibility. All other rows are written as-is. |
+| `2` | Uses row 2 (second spreadsheet row) as the header reference. **Skips row 0** (column letters). Row 1 is written as-is (not sanitized). Row 2 is sanitized. All other rows are written as-is. |
+| `3+` | Uses row N as the header reference. **Skips row 0** (column letters). All rows between row 1 and row N-1 are written as-is (not sanitized). Row N is sanitized. All following rows are written as-is. |
 
 ### Example configuration
 

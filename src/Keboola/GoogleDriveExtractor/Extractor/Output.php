@@ -59,22 +59,12 @@ class Output
         if ($this->header === null) {
             $headerRows = $this->sheetCfg['header']['rows'];
 
-            // Detect if Google has prepended column letters (A, B, C, ...) at index 0
-            $hasColumnLetters = $this->hasColumnLettersAtIndex0($data);
-
-            if ($headerRows === 0 && !$hasColumnLetters) {
-                // headerRows=0 without column letters: use first row
-                $firstRow = reset($data);
-                $this->header = is_array($firstRow) ? $firstRow : [];
-                $headerLength = count($this->header);
-            } else {
-                // Adjust index based on whether column letters are present
-                // With column letters: headerRows=0 -> index 0, headerRows=1 -> index 1, etc.
-                // Without column letters: headerRows=1 -> index 0, headerRows=2 -> index 1, etc.
-                $headerRowNum = $hasColumnLetters ? $headerRows : $headerRows - 1;
-                $this->header = $data[$headerRowNum];
-                $headerLength = $this->getHeaderLength($data, (int) $headerRowNum);
-            }
+            // Simple logic:
+            // headerRows=0: use row 0 as header
+            // headerRows=N: use row N as header
+            $headerRowNum = $headerRows;
+            $this->header = $data[$headerRowNum];
+            $headerLength = $this->getHeaderLength($data, (int) $headerRowNum);
         } else {
             $headerLength = count($this->header);
         }
@@ -82,12 +72,13 @@ class Output
         foreach ($data as $k => $row) {
             $headerRows = $this->sheetCfg['header']['rows'];
 
-            // Detect if Google has prepended column letters
-            $hasColumnLetters = $this->hasColumnLettersAtIndex0($data);
+            // Skip row 0 (Google's column letters) when headerRows >= 1
+            if ($headerRows >= 1 && $k === 0 && $offset === 1) {
+                continue;
+            }
 
-            // Sanitize only the header row
-            $sanitizeIndex = $hasColumnLetters ? $headerRows : $headerRows - 1;
-            if ($headerRows > 0 && $k === $sanitizeIndex && $offset === 1) {
+            // Sanitize only the header row (row at index headerRows)
+            if ($headerRows > 0 && $k === $headerRows && $offset === 1) {
                 if (!isset($this->sheetCfg['header']['sanitize']) || $this->sheetCfg['header']['sanitize'] !== false) {
                     $row = $this->normalizeCsvHeader($row);
                 }
@@ -139,34 +130,5 @@ class Output
             $headerLength = max($headerLength, count($data[$i]));
         }
         return $headerLength;
-    }
-
-    /**
-     * Detect if Google has prepended column letters (A, B, C, ...) at index 0
-     * This happens when Google API includes auto-generated column headers
-     * @param array<int, array<int, mixed>> $data
-     */
-    private function hasColumnLettersAtIndex0(array $data): bool
-    {
-        if (empty($data) || !isset($data[0])) {
-            return false;
-        }
-
-        $firstRow = $data[0];
-        if (empty($firstRow)) {
-            return false;
-        }
-
-        // Check if all values in first row look like column letters (A, B, C, ..., AA, AB, etc.)
-        // Column letters are 1-3 uppercase letters only
-        foreach ($firstRow as $value) {
-            if (!preg_match('/^[A-Z]{1,3}$/', (string) $value)) {
-                return false;
-            }
-        }
-
-        // Additional check: verify they follow alphabetical sequence (A, B, C, ... or starts reasonably)
-        // At minimum, check if first value is a valid column letter pattern
-        return true;
     }
 }
