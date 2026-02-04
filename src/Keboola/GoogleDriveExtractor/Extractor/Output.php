@@ -58,8 +58,7 @@ class Output
                 $headerLength = count($this->header);
             } else {
                 // Standard behavior - use specified row as header
-                // Since Google provides column letters at index 0, row N is at index N
-                $headerRowNum = $headerRows;
+                $headerRowNum = $headerRows - 1;
                 $this->header = $data[$headerRowNum];
                 $headerLength = $this->getHeaderLength($data, (int) $headerRowNum);
             }
@@ -70,8 +69,8 @@ class Output
         foreach ($data as $k => $row) {
             $headerRows = $this->sheetCfg['header']['rows'];
 
-            // Sanitize only the header row (row at index headerRows, since index 0 is Google's column letters)
-            if ($headerRows > 0 && $k === $headerRows && $offset === 1) {
+            // Sanitize only the header row (row at index headerRows-1)
+            if ($headerRows > 0 && $k === $headerRows - 1 && $offset === 1) {
                 if (!isset($this->sheetCfg['header']['sanitize']) || $this->sheetCfg['header']['sanitize'] !== false) {
                     $row = $this->normalizeCsvHeader($row);
                 }
