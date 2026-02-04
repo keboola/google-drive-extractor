@@ -15,8 +15,10 @@ class Output
 
     private CsvWriter $csv;
 
+    /** @var array<int, mixed>|null */
     private ?array $header;
 
+    /** @var array<string, mixed> */
     private array $sheetCfg;
 
     public function __construct(string $dataDir, string $outputBucket)
@@ -25,6 +27,9 @@ class Output
         $this->outputBucket = $outputBucket;
     }
 
+    /**
+     * @param array<string, mixed> $sheet
+     */
     public function createCsv(array $sheet): string
     {
         $outTablesDir = $this->dataDir . '/out/tables';
@@ -42,6 +47,9 @@ class Output
         return $filename;
     }
 
+    /**
+     * @param array<int, array<int, mixed>> $data
+     */
     public function write(array $data, int $offset): void
     {
         if (!($this->csv instanceof CsvWriter)) {
@@ -109,6 +117,10 @@ class Output
         }
     }
 
+    /**
+     * @param array<int, mixed> $header
+     * @return array<int, mixed>
+     */
     protected function normalizeCsvHeader(array $header): array
     {
         foreach ($header as &$col) {
@@ -117,6 +129,9 @@ class Output
         return $header;
     }
 
+    /**
+     * @param array<int, array<int, mixed>> $data
+     */
     private function getHeaderLength(array $data, int $headerRowNum): int
     {
         $headerLength = 0;
@@ -129,10 +144,11 @@ class Output
     /**
      * Detect if Google has prepended column letters (A, B, C, ...) at index 0
      * This happens when Google API includes auto-generated column headers
+     * @param array<int, array<int, mixed>> $data
      */
     private function hasColumnLettersAtIndex0(array $data): bool
     {
-        if (empty($data) || !isset($data[0]) || !is_array($data[0])) {
+        if (empty($data) || !isset($data[0])) {
             return false;
         }
 
