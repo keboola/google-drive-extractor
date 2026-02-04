@@ -10,11 +10,14 @@ Extract data from Google Drive files and spreadsheets.
 
 The `header.rows` parameter controls how the extractor interprets and processes the first rows of your spreadsheet:
 
+Google now includes column letters (A, B, C, ...) as row 0 in the API response. The `header.rows` parameter refers to this 0-indexed data:
+
 | Value | Behavior |
 |-------|----------|
-| `0` | Uses the first row as the header reference (Google provides column names like A, B, C, ... as the 0th row). All spreadsheet rows are written to the output. |
-| `1` | Uses the first row as the header reference. The header row is sanitized for storage compatibility. All rows are written to the output. |
-| `2+` | Uses the specified row as the header reference (e.g., `2` uses the second row). The header row is sanitized. Column count is determined from the maximum across all rows up to and including the header row. All rows are written to the output. |
+| `0` | Uses row 0 (Google's column letters: A, B, C, ...) as the header. All rows including the column letters are written to the output. |
+| `1` | Uses row 1 (first actual spreadsheet row) as the header reference. This row is sanitized for storage compatibility. All rows including Google's column letters are written to the output. |
+| `2` | Uses row 2 (second spreadsheet row) as the header reference. This row is sanitized. Column count is determined from the maximum across all rows up to and including the header row. All rows are written to the output. |
+| `3+` | Uses the specified row as the header reference. The header row is sanitized. All rows are written to the output. |
 
 ### Example configuration
 

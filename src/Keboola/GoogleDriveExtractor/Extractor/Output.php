@@ -51,17 +51,13 @@ class Output
         if ($this->header === null) {
             $headerRows = $this->sheetCfg['header']['rows'];
 
-            if ($headerRows === 0) {
-                // Use first row as header (Google provides A, B, C, ... as the 0th row)
-                $firstRow = reset($data);
-                $this->header = is_array($firstRow) ? $firstRow : [];
-                $headerLength = count($this->header);
-            } else {
-                // Standard behavior - use specified row as header
-                $headerRowNum = $headerRows - 1;
-                $this->header = $data[$headerRowNum];
-                $headerLength = $this->getHeaderLength($data, (int) $headerRowNum);
-            }
+            // Google now provides column letters (A, B, C, ...) at index 0
+            // So headerRows=0 uses index 0 (column letters)
+            // headerRows=1 uses index 1 (first actual data row)
+            // headerRows=2 uses index 2 (second actual data row), etc.
+            $headerRowNum = $headerRows;
+            $this->header = $data[$headerRowNum];
+            $headerLength = $this->getHeaderLength($data, (int) $headerRowNum);
         } else {
             $headerLength = count($this->header);
         }
@@ -69,8 +65,9 @@ class Output
         foreach ($data as $k => $row) {
             $headerRows = $this->sheetCfg['header']['rows'];
 
-            // Sanitize only the header row (row at index headerRows-1)
-            if ($headerRows > 0 && $k === $headerRows - 1 && $offset === 1) {
+            // Sanitize only the header row (row at index headerRows)
+            // Google provides column letters at index 0, so headerRows=1 sanitizes index 1, etc.
+            if ($headerRows > 0 && $k === $headerRows && $offset === 1) {
                 if (!isset($this->sheetCfg['header']['sanitize']) || $this->sheetCfg['header']['sanitize'] !== false) {
                     $row = $this->normalizeCsvHeader($row);
                 }
