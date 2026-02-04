@@ -72,7 +72,7 @@ class ConfigDefinition implements ConfigurationInterface
                                 ->children()
                                     ->integerNode('rows')
                                         ->defaultValue(1)
-                                        ->min(-1)
+                                        ->min(0)
                                     ->end()
                                     ->arrayNode('columns')
                                         ->prototype('scalar')

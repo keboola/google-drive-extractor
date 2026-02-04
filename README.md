@@ -12,8 +12,7 @@ The `header.rows` parameter controls how the extractor interprets and processes 
 
 | Value | Behavior |
 |-------|----------|
-| `-1` | Auto-generates Excel-style column headers (A, B, C, ..., Z, AA, AB, ...) based on the maximum column count across all data rows. All spreadsheet rows are written to the output. |
-| `0` | Auto-generates column headers based on the first row's column count. All spreadsheet rows are written to the output. |
+| `0` | Uses the first row as the header reference (Google provides column names like A, B, C, ... as the 0th row). All spreadsheet rows are written to the output. |
 | `1` | Uses the first row as the header reference. The header row is sanitized for storage compatibility. All rows are written to the output. |
 | `2+` | Uses the specified row as the header reference (e.g., `2` uses the second row). The header row is sanitized. Column count is determined from the maximum across all rows up to and including the header row. All rows are written to the output. |
 
@@ -33,7 +32,7 @@ parameters:
       enabled: true
       columnRange: "Z:AE"  # Optional: limit extraction to specific columns
       header:
-        rows: -1           # Auto-generate headers, treat all rows as data
+        rows: 1            # Use first row as header (defaults to 1)
         sanitize: true     # Optional: disable header sanitization (only for rows >= 1)
 ```
 
