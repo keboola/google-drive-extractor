@@ -3,345 +3,365 @@ parameters:
 		-
 			message: "#^Cannot access offset 'access_token' on mixed\\.$#"
 			count: 1
-			path: /code/src/Keboola/GoogleDriveExtractor/Application.php
+			path: src/Keboola/GoogleDriveExtractor/Application.php
 
 		-
 			message: "#^Cannot access offset 'refresh_token' on mixed\\.$#"
 			count: 1
-			path: /code/src/Keboola/GoogleDriveExtractor/Application.php
+			path: src/Keboola/GoogleDriveExtractor/Application.php
 
 		-
 			message: "#^Cannot access offset 'sheets' on mixed\\.$#"
 			count: 1
-			path: /code/src/Keboola/GoogleDriveExtractor/Application.php
+			path: src/Keboola/GoogleDriveExtractor/Application.php
 
 		-
 			message: "#^Cannot call method warning\\(\\) on mixed\\.$#"
 			count: 1
-			path: /code/src/Keboola/GoogleDriveExtractor/Application.php
+			path: src/Keboola/GoogleDriveExtractor/Application.php
 
 		-
 			message: "#^Method Keboola\\\\GoogleDriveExtractor\\\\Application\\:\\:__construct\\(\\) has parameter \\$config with no value type specified in iterable type array\\.$#"
 			count: 1
-			path: /code/src/Keboola/GoogleDriveExtractor/Application.php
+			path: src/Keboola/GoogleDriveExtractor/Application.php
 
 		-
 			message: "#^Method Keboola\\\\GoogleDriveExtractor\\\\Application\\:\\:run\\(\\) return type has no value type specified in iterable type array\\.$#"
 			count: 1
-			path: /code/src/Keboola/GoogleDriveExtractor/Application.php
+			path: src/Keboola/GoogleDriveExtractor/Application.php
 
 		-
 			message: "#^Method Keboola\\\\GoogleDriveExtractor\\\\Application\\:\\:runAction\\(\\) return type has no value type specified in iterable type array\\.$#"
 			count: 1
-			path: /code/src/Keboola/GoogleDriveExtractor/Application.php
+			path: src/Keboola/GoogleDriveExtractor/Application.php
 
 		-
 			message: "#^Method Keboola\\\\GoogleDriveExtractor\\\\Application\\:\\:validateParameters\\(\\) has parameter \\$parameters with no value type specified in iterable type array\\.$#"
 			count: 1
-			path: /code/src/Keboola/GoogleDriveExtractor/Application.php
+			path: src/Keboola/GoogleDriveExtractor/Application.php
 
 		-
 			message: "#^Method Keboola\\\\GoogleDriveExtractor\\\\Application\\:\\:validateParameters\\(\\) return type has no value type specified in iterable type array\\.$#"
 			count: 1
-			path: /code/src/Keboola/GoogleDriveExtractor/Application.php
+			path: src/Keboola/GoogleDriveExtractor/Application.php
 
 		-
 			message: "#^Parameter \\#1 \\$sheets of method Keboola\\\\GoogleDriveExtractor\\\\Extractor\\\\Extractor\\:\\:run\\(\\) expects array, mixed given\\.$#"
 			count: 1
-			path: /code/src/Keboola/GoogleDriveExtractor/Application.php
+			path: src/Keboola/GoogleDriveExtractor/Application.php
 
 		-
 			message: "#^Parameter \\#2 \\.\\.\\.\\$values of function sprintf expects bool\\|float\\|int\\|string\\|null, mixed given\\.$#"
 			count: 1
-			path: /code/src/Keboola/GoogleDriveExtractor/Application.php
+			path: src/Keboola/GoogleDriveExtractor/Application.php
 
 		-
 			message: "#^Parameter \\#3 \\$accessToken of static method Keboola\\\\Google\\\\ClientBundle\\\\Google\\\\RestApi\\:\\:createWithOAuth\\(\\) expects string, mixed given\\.$#"
 			count: 1
-			path: /code/src/Keboola/GoogleDriveExtractor/Application.php
+			path: src/Keboola/GoogleDriveExtractor/Application.php
 
 		-
 			message: "#^Parameter \\#4 \\$refreshToken of static method Keboola\\\\Google\\\\ClientBundle\\\\Google\\\\RestApi\\:\\:createWithOAuth\\(\\) expects string, mixed given\\.$#"
 			count: 1
-			path: /code/src/Keboola/GoogleDriveExtractor/Application.php
+			path: src/Keboola/GoogleDriveExtractor/Application.php
 
 		-
 			message: "#^Method Keboola\\\\GoogleDriveExtractor\\\\Exception\\\\ApplicationException\\:\\:__construct\\(\\) has parameter \\$data with no value type specified in iterable type array\\.$#"
 			count: 1
-			path: /code/src/Keboola/GoogleDriveExtractor/Exception/ApplicationException.php
+			path: src/Keboola/GoogleDriveExtractor/Exception/ApplicationException.php
 
 		-
 			message: "#^Method Keboola\\\\GoogleDriveExtractor\\\\Exception\\\\ApplicationException\\:\\:getData\\(\\) return type has no value type specified in iterable type array\\.$#"
 			count: 1
-			path: /code/src/Keboola/GoogleDriveExtractor/Exception/ApplicationException.php
+			path: src/Keboola/GoogleDriveExtractor/Exception/ApplicationException.php
 
 		-
 			message: "#^Method Keboola\\\\GoogleDriveExtractor\\\\Exception\\\\ApplicationException\\:\\:setData\\(\\) has parameter \\$data with no value type specified in iterable type array\\.$#"
 			count: 1
-			path: /code/src/Keboola/GoogleDriveExtractor/Exception/ApplicationException.php
+			path: src/Keboola/GoogleDriveExtractor/Exception/ApplicationException.php
 
 		-
 			message: "#^Property Keboola\\\\GoogleDriveExtractor\\\\Exception\\\\ApplicationException\\:\\:\\$data type has no value type specified in iterable type array\\.$#"
 			count: 1
-			path: /code/src/Keboola/GoogleDriveExtractor/Exception/ApplicationException.php
+			path: src/Keboola/GoogleDriveExtractor/Exception/ApplicationException.php
 
 		-
 			message: "#^Method Keboola\\\\GoogleDriveExtractor\\\\Extractor\\\\ExceptionHandler\\:\\:handleExportException\\(\\) has parameter \\$sheet with no value type specified in iterable type array\\.$#"
 			count: 1
-			path: /code/src/Keboola/GoogleDriveExtractor/Extractor/ExceptionHandler.php
+			path: src/Keboola/GoogleDriveExtractor/Extractor/ExceptionHandler.php
 
 		-
 			message: "#^Method Keboola\\\\GoogleDriveExtractor\\\\Extractor\\\\ExceptionHandler\\:\\:handleGetSpreadsheetException\\(\\) has parameter \\$sheet with no value type specified in iterable type array\\.$#"
 			count: 1
-			path: /code/src/Keboola/GoogleDriveExtractor/Extractor/ExceptionHandler.php
+			path: src/Keboola/GoogleDriveExtractor/Extractor/ExceptionHandler.php
 
 		-
 			message: "#^Parameter \\#2 \\$array of function array_key_exists expects array, mixed given\\.$#"
 			count: 1
-			path: /code/src/Keboola/GoogleDriveExtractor/Extractor/ExceptionHandler.php
+			path: src/Keboola/GoogleDriveExtractor/Extractor/ExceptionHandler.php
 
 		-
 			message: "#^Method Keboola\\\\GoogleDriveExtractor\\\\Extractor\\\\Extractor\\:\\:export\\(\\) has parameter \\$sheetCfg with no value type specified in iterable type array\\.$#"
 			count: 1
-			path: /code/src/Keboola/GoogleDriveExtractor/Extractor/Extractor.php
+			path: src/Keboola/GoogleDriveExtractor/Extractor/Extractor.php
 
 		-
 			message: "#^Method Keboola\\\\GoogleDriveExtractor\\\\Extractor\\\\Extractor\\:\\:export\\(\\) has parameter \\$spreadsheet with no value type specified in iterable type array\\.$#"
 			count: 1
-			path: /code/src/Keboola/GoogleDriveExtractor/Extractor/Extractor.php
+			path: src/Keboola/GoogleDriveExtractor/Extractor/Extractor.php
 
 		-
 			message: "#^Method Keboola\\\\GoogleDriveExtractor\\\\Extractor\\\\Extractor\\:\\:getSheetById\\(\\) has parameter \\$sheets with no value type specified in iterable type array\\.$#"
 			count: 1
-			path: /code/src/Keboola/GoogleDriveExtractor/Extractor/Extractor.php
+			path: src/Keboola/GoogleDriveExtractor/Extractor/Extractor.php
 
 		-
 			message: "#^Method Keboola\\\\GoogleDriveExtractor\\\\Extractor\\\\Extractor\\:\\:getSheetById\\(\\) return type has no value type specified in iterable type array\\.$#"
 			count: 1
-			path: /code/src/Keboola/GoogleDriveExtractor/Extractor/Extractor.php
+			path: src/Keboola/GoogleDriveExtractor/Extractor/Extractor.php
 
 		-
 			message: "#^Method Keboola\\\\GoogleDriveExtractor\\\\Extractor\\\\Extractor\\:\\:parseColumnRange\\(\\) return type has no value type specified in iterable type array\\.$#"
 			count: 1
-			path: /code/src/Keboola/GoogleDriveExtractor/Extractor/Extractor.php
+			path: src/Keboola/GoogleDriveExtractor/Extractor/Extractor.php
 
 		-
 			message: "#^Method Keboola\\\\GoogleDriveExtractor\\\\Extractor\\\\Extractor\\:\\:run\\(\\) has parameter \\$sheets with no value type specified in iterable type array\\.$#"
 			count: 1
-			path: /code/src/Keboola/GoogleDriveExtractor/Extractor/Extractor.php
+			path: src/Keboola/GoogleDriveExtractor/Extractor/Extractor.php
 
 		-
 			message: "#^Method Keboola\\\\GoogleDriveExtractor\\\\Extractor\\\\Extractor\\:\\:run\\(\\) return type has no value type specified in iterable type array\\.$#"
 			count: 1
-			path: /code/src/Keboola/GoogleDriveExtractor/Extractor/Extractor.php
+			path: src/Keboola/GoogleDriveExtractor/Extractor/Extractor.php
 
 		-
-			message: "#^Method Keboola\\\\GoogleDriveExtractor\\\\Extractor\\\\Output\\:\\:createCsv\\(\\) has parameter \\$sheet with no value type specified in iterable type array\\.$#"
-			count: 1
-			path: /code/src/Keboola/GoogleDriveExtractor/Extractor/Output.php
+			message: "#^Cannot access offset 'rows' on mixed\\.$#"
+			count: 2
+			path: src/Keboola/GoogleDriveExtractor/Extractor/Output.php
 
 		-
-			message: "#^Method Keboola\\\\GoogleDriveExtractor\\\\Extractor\\\\Output\\:\\:getHeaderLength\\(\\) has parameter \\$data with no value type specified in iterable type array\\.$#"
+			message: "#^Cannot access offset 'sanitize' on mixed\\.$#"
 			count: 1
-			path: /code/src/Keboola/GoogleDriveExtractor/Extractor/Output.php
+			path: src/Keboola/GoogleDriveExtractor/Extractor/Output.php
 
 		-
-			message: "#^Method Keboola\\\\GoogleDriveExtractor\\\\Extractor\\\\Output\\:\\:normalizeCsvHeader\\(\\) has parameter \\$header with no value type specified in iterable type array\\.$#"
+			message: "#^Cannot cast mixed to int\\.$#"
 			count: 1
-			path: /code/src/Keboola/GoogleDriveExtractor/Extractor/Output.php
+			path: src/Keboola/GoogleDriveExtractor/Extractor/Output.php
 
 		-
-			message: "#^Method Keboola\\\\GoogleDriveExtractor\\\\Extractor\\\\Output\\:\\:normalizeCsvHeader\\(\\) return type has no value type specified in iterable type array\\.$#"
+			message: "#^Parameter \\#1 \\$string of static method Keboola\\\\GoogleDriveExtractor\\\\Extractor\\\\Utility\\:\\:sanitize\\(\\) expects string, mixed given\\.$#"
 			count: 1
-			path: /code/src/Keboola/GoogleDriveExtractor/Extractor/Output.php
-
-		-
-			message: "#^Method Keboola\\\\GoogleDriveExtractor\\\\Extractor\\\\Output\\:\\:write\\(\\) has parameter \\$data with no value type specified in iterable type array\\.$#"
-			count: 1
-			path: /code/src/Keboola/GoogleDriveExtractor/Extractor/Output.php
-
-		-
-			message: "#^Property Keboola\\\\GoogleDriveExtractor\\\\Extractor\\\\Output\\:\\:\\$header type has no value type specified in iterable type array\\.$#"
-			count: 1
-			path: /code/src/Keboola/GoogleDriveExtractor/Extractor/Output.php
-
-		-
-			message: "#^Property Keboola\\\\GoogleDriveExtractor\\\\Extractor\\\\Output\\:\\:\\$sheetCfg type has no value type specified in iterable type array\\.$#"
-			count: 1
-			path: /code/src/Keboola/GoogleDriveExtractor/Extractor/Output.php
+			path: src/Keboola/GoogleDriveExtractor/Extractor/Output.php
 
 		-
 			message: "#^Cannot access offset 'id' on mixed\\.$#"
 			count: 1
-			path: /code/src/Keboola/GoogleDriveExtractor/GoogleDrive/Client.php
+			path: src/Keboola/GoogleDriveExtractor/GoogleDrive/Client.php
 
 		-
 			message: "#^Method Keboola\\\\GoogleDriveExtractor\\\\GoogleDrive\\\\Client\\:\\:addFields\\(\\) has parameter \\$fields with no value type specified in iterable type array\\.$#"
 			count: 1
-			path: /code/src/Keboola/GoogleDriveExtractor/GoogleDrive/Client.php
+			path: src/Keboola/GoogleDriveExtractor/GoogleDrive/Client.php
 
 		-
 			message: "#^Method Keboola\\\\GoogleDriveExtractor\\\\GoogleDrive\\\\Client\\:\\:createFile\\(\\) return type has no value type specified in iterable type array\\.$#"
 			count: 1
-			path: /code/src/Keboola/GoogleDriveExtractor/GoogleDrive/Client.php
+			path: src/Keboola/GoogleDriveExtractor/GoogleDrive/Client.php
 
 		-
 			message: "#^Method Keboola\\\\GoogleDriveExtractor\\\\GoogleDrive\\\\Client\\:\\:createFile\\(\\) should return array but returns mixed\\.$#"
 			count: 1
-			path: /code/src/Keboola/GoogleDriveExtractor/GoogleDrive/Client.php
+			path: src/Keboola/GoogleDriveExtractor/GoogleDrive/Client.php
 
 		-
 			message: "#^Method Keboola\\\\GoogleDriveExtractor\\\\GoogleDrive\\\\Client\\:\\:getFile\\(\\) return type has no value type specified in iterable type array\\.$#"
 			count: 1
-			path: /code/src/Keboola/GoogleDriveExtractor/GoogleDrive/Client.php
+			path: src/Keboola/GoogleDriveExtractor/GoogleDrive/Client.php
 
 		-
 			message: "#^Method Keboola\\\\GoogleDriveExtractor\\\\GoogleDrive\\\\Client\\:\\:getFile\\(\\) should return array but returns mixed\\.$#"
 			count: 1
-			path: /code/src/Keboola/GoogleDriveExtractor/GoogleDrive/Client.php
+			path: src/Keboola/GoogleDriveExtractor/GoogleDrive/Client.php
 
 		-
 			message: "#^Method Keboola\\\\GoogleDriveExtractor\\\\GoogleDrive\\\\Client\\:\\:getSpreadsheet\\(\\) return type has no value type specified in iterable type array\\.$#"
 			count: 1
-			path: /code/src/Keboola/GoogleDriveExtractor/GoogleDrive/Client.php
+			path: src/Keboola/GoogleDriveExtractor/GoogleDrive/Client.php
 
 		-
 			message: "#^Method Keboola\\\\GoogleDriveExtractor\\\\GoogleDrive\\\\Client\\:\\:getSpreadsheet\\(\\) should return array but returns mixed\\.$#"
 			count: 1
-			path: /code/src/Keboola/GoogleDriveExtractor/GoogleDrive/Client.php
+			path: src/Keboola/GoogleDriveExtractor/GoogleDrive/Client.php
 
 		-
 			message: "#^Method Keboola\\\\GoogleDriveExtractor\\\\GoogleDrive\\\\Client\\:\\:getSpreadsheetValues\\(\\) return type has no value type specified in iterable type array\\.$#"
 			count: 1
-			path: /code/src/Keboola/GoogleDriveExtractor/GoogleDrive/Client.php
+			path: src/Keboola/GoogleDriveExtractor/GoogleDrive/Client.php
 
 		-
 			message: "#^Method Keboola\\\\GoogleDriveExtractor\\\\GoogleDrive\\\\Client\\:\\:getSpreadsheetValues\\(\\) should return array but returns mixed\\.$#"
 			count: 1
-			path: /code/src/Keboola/GoogleDriveExtractor/GoogleDrive/Client.php
+			path: src/Keboola/GoogleDriveExtractor/GoogleDrive/Client.php
 
 		-
 			message: "#^Parameter \\#3 \\.\\.\\.\\$values of function sprintf expects bool\\|float\\|int\\|string\\|null, mixed given\\.$#"
 			count: 1
-			path: /code/src/Keboola/GoogleDriveExtractor/GoogleDrive/Client.php
+			path: src/Keboola/GoogleDriveExtractor/GoogleDrive/Client.php
 
 		-
 			message: "#^Cannot access offset 'destination' on mixed\\.$#"
 			count: 1
-			path: /code/tests/ApplicationTest.php
+			path: tests/ApplicationTest.php
 
 		-
 			message: "#^Cannot access offset 'incremental' on mixed\\.$#"
 			count: 1
-			path: /code/tests/ApplicationTest.php
+			path: tests/ApplicationTest.php
 
 		-
 			message: "#^Parameter \\#2 \\$array of method PHPUnit\\\\Framework\\\\Assert\\:\\:assertArrayHasKey\\(\\) expects array\\|ArrayAccess, mixed given\\.$#"
 			count: 2
-			path: /code/tests/ApplicationTest.php
+			path: tests/ApplicationTest.php
 
 		-
 			message: "#^Cannot access offset '\\#serviceAccount' on mixed\\.$#"
 			count: 1
-			path: /code/tests/BaseTest.php
+			path: tests/BaseTest.php
 
 		-
 			message: "#^Cannot access offset 'authorization' on mixed\\.$#"
 			count: 2
-			path: /code/tests/BaseTest.php
+			path: tests/BaseTest.php
 
 		-
 			message: "#^Cannot access offset 'credentials' on mixed\\.$#"
 			count: 1
-			path: /code/tests/BaseTest.php
+			path: tests/BaseTest.php
 
 		-
 			message: "#^Cannot access offset 'data_dir' on mixed\\.$#"
 			count: 2
-			path: /code/tests/BaseTest.php
+			path: tests/BaseTest.php
 
 		-
 			message: "#^Cannot access offset 'oauth_api' on mixed\\.$#"
 			count: 1
-			path: /code/tests/BaseTest.php
+			path: tests/BaseTest.php
 
 		-
 			message: "#^Cannot access offset 'parameters' on mixed\\.$#"
 			count: 5
-			path: /code/tests/BaseTest.php
+			path: tests/BaseTest.php
 
 		-
 			message: "#^Cannot access offset 'sheets' on mixed\\.$#"
 			count: 2
-			path: /code/tests/BaseTest.php
+			path: tests/BaseTest.php
 
 		-
 			message: "#^Cannot access offset 0 on mixed\\.$#"
 			count: 2
-			path: /code/tests/BaseTest.php
+			path: tests/BaseTest.php
 
 		-
 			message: "#^Method Keboola\\\\GoogleDriveExtractor\\\\Tests\\\\BaseTest\\:\\:makeConfig\\(\\) has parameter \\$testFile with no value type specified in iterable type array\\.$#"
 			count: 1
-			path: /code/tests/BaseTest.php
+			path: tests/BaseTest.php
 
 		-
 			message: "#^Method Keboola\\\\GoogleDriveExtractor\\\\Tests\\\\BaseTest\\:\\:makeConfig\\(\\) return type has no value type specified in iterable type array\\.$#"
 			count: 1
-			path: /code/tests/BaseTest.php
+			path: tests/BaseTest.php
 
 		-
 			message: "#^Method Keboola\\\\GoogleDriveExtractor\\\\Tests\\\\BaseTest\\:\\:makeConfig\\(\\) should return array but returns mixed\\.$#"
 			count: 1
-			path: /code/tests/BaseTest.php
+			path: tests/BaseTest.php
 
 		-
 			message: "#^Method Keboola\\\\GoogleDriveExtractor\\\\Tests\\\\BaseTest\\:\\:makeConfigWithServiceAccount\\(\\) has parameter \\$testFile with no value type specified in iterable type array\\.$#"
 			count: 1
-			path: /code/tests/BaseTest.php
+			path: tests/BaseTest.php
 
 		-
 			message: "#^Method Keboola\\\\GoogleDriveExtractor\\\\Tests\\\\BaseTest\\:\\:makeConfigWithServiceAccount\\(\\) return type has no value type specified in iterable type array\\.$#"
 			count: 1
-			path: /code/tests/BaseTest.php
+			path: tests/BaseTest.php
 
 		-
 			message: "#^Method Keboola\\\\GoogleDriveExtractor\\\\Tests\\\\BaseTest\\:\\:makeConfigWithServiceAccount\\(\\) should return array but returns mixed\\.$#"
 			count: 1
-			path: /code/tests/BaseTest.php
+			path: tests/BaseTest.php
 
 		-
 			message: "#^Method Keboola\\\\GoogleDriveExtractor\\\\Tests\\\\BaseTest\\:\\:prepareTestFile\\(\\) return type has no value type specified in iterable type array\\.$#"
 			count: 1
-			path: /code/tests/BaseTest.php
+			path: tests/BaseTest.php
 
 		-
 			message: "#^Property Keboola\\\\GoogleDriveExtractor\\\\Tests\\\\BaseTest\\:\\:\\$config type has no value type specified in iterable type array\\.$#"
 			count: 1
-			path: /code/tests/BaseTest.php
+			path: tests/BaseTest.php
 
 		-
 			message: "#^Property Keboola\\\\GoogleDriveExtractor\\\\Tests\\\\BaseTest\\:\\:\\$testFile type has no value type specified in iterable type array\\.$#"
 			count: 1
-			path: /code/tests/BaseTest.php
+			path: tests/BaseTest.php
+
+		-
+			message: "#^Cannot access offset 'columnRange' on mixed\\.$#"
+			count: 3
+			path: tests/Configuration/ConfigDefinitionTest.php
+
+		-
+			message: "#^Cannot access offset 'header' on mixed\\.$#"
+			count: 1
+			path: tests/Configuration/ConfigDefinitionTest.php
+
+		-
+			message: "#^Cannot access offset 'rows' on mixed\\.$#"
+			count: 1
+			path: tests/Configuration/ConfigDefinitionTest.php
+
+		-
+			message: "#^Cannot access offset 0 on mixed\\.$#"
+			count: 5
+			path: tests/Configuration/ConfigDefinitionTest.php
+
+		-
+			message: "#^Parameter \\#2 \\$array of method PHPUnit\\\\Framework\\\\Assert\\:\\:assertArrayNotHasKey\\(\\) expects array\\|ArrayAccess, mixed given\\.$#"
+			count: 1
+			path: tests/Configuration/ConfigDefinitionTest.php
+
+		-
+			message: "#^Cannot use array destructuring on mixed\\.$#"
+			count: 7
+			path: tests/Extractor/ColumnRangeTest.php
 
 		-
 			message: "#^Method Keboola\\\\GoogleDriveExtractor\\\\Tests\\\\Extractor\\\\ExceptionHandleTest\\:\\:provideExceptionsForExport\\(\\) return type has no value type specified in iterable type array\\.$#"
 			count: 1
-			path: /code/tests/Extractor/ExceptionHandleTest.php
+			path: tests/Extractor/ExceptionHandleTest.php
 
 		-
 			message: "#^Method Keboola\\\\GoogleDriveExtractor\\\\Tests\\\\Extractor\\\\ExceptionHandleTest\\:\\:provideExceptionsForGetSpreadsheet\\(\\) return type has no value type specified in iterable type array\\.$#"
 			count: 1
-			path: /code/tests/Extractor/ExceptionHandleTest.php
+			path: tests/Extractor/ExceptionHandleTest.php
 
 		-
 			message: "#^Method Keboola\\\\GoogleDriveExtractor\\\\Tests\\\\Extractor\\\\ExceptionHandleTest\\:\\:testExportExceptionHandling\\(\\) has parameter \\$sheet with no value type specified in iterable type array\\.$#"
 			count: 1
-			path: /code/tests/Extractor/ExceptionHandleTest.php
+			path: tests/Extractor/ExceptionHandleTest.php
 
 		-
 			message: "#^Method Keboola\\\\GoogleDriveExtractor\\\\Tests\\\\Extractor\\\\ExceptionHandleTest\\:\\:testHandlingOfExceptions\\(\\) has parameter \\$sheet with no value type specified in iterable type array\\.$#"
 			count: 1
-			path: /code/tests/Extractor/ExceptionHandleTest.php
+			path: tests/Extractor/ExceptionHandleTest.php
+
+		-
+			message: "#^Parameter \\#1 \\$string of function trim expects string, string\\|false given\\.$#"
+			count: 5
+			path: tests/Extractor/OutputTest.php
 
