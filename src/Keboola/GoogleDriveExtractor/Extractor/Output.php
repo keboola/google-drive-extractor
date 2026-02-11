@@ -64,7 +64,8 @@ class Output
                 }
                 $headerLength = $columnCount;
                 // Write the generated header as first row
-                if ($offset === 1) {
+                $startRow = $this->sheetCfg['_startRow'] ?? 1;
+                if ($offset === $startRow) {
                     $this->csv->writeRow($this->header);
                 }
             } else {
@@ -79,7 +80,8 @@ class Output
 
         foreach ($data as $k => $row) {
             // backward compatibility fix - only sanitize header when there's exactly 1 header row
-            if ($this->sheetCfg['header']['rows'] === 1 && $k === 0 && $offset === 1) {
+            $startRow = $this->sheetCfg['_startRow'] ?? 1;
+            if ($this->sheetCfg['header']['rows'] === 1 && $k === 0 && $offset === $startRow) {
                 if (!isset($this->sheetCfg['header']['sanitize']) || $this->sheetCfg['header']['sanitize'] !== false) {
                     $row = $this->normalizeCsvHeader($row);
                 }
