@@ -18,9 +18,12 @@ parameters:
       sheetTitle: SHEET_TITLE
       outputTable: FILE_TITLE
       enabled: true
-      columnRange: "Z:AE"  # Optional: limit extraction to specific columns
+      columnRange: "A:E"   # Optional: specify range to extract
+                           # Formats: "A:E" (all rows), "A1:E10" (bounded), "A10:E" (from row 10), "A:E10" (rows 1-10)
+                           # Out-of-bounds columns/endRow are silently capped to sheet size.
+                           # Out-of-bounds startRow raises a configuration error.
       header:
-        rows: 0            # Set to 0 for no header (generates column letters: Z, AA, AB, AC, AD, AE)
+        rows: 0            # Set to 0 for no header (generates column letters)
 ```
 
 ## OAuth Registration
