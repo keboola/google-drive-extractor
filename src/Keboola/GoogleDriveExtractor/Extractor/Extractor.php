@@ -123,6 +123,7 @@ class Extractor
                 $endColumn,
                 $startRow,
                 $sheetRowCount,
+                $sheetColumnCount,
             );
         }
     }
@@ -165,11 +166,13 @@ class Extractor
         );
 
         if (!empty($response['values'])) {
-            $sheetCfgWithRange = $sheetCfg;
-            $sheetCfgWithRange['_startColumn'] = $startColumn;
-            $sheetCfgWithRange['_endColumn'] = $endColumn;
-            $sheetCfgWithRange['_startRow'] = $startRow;
-            $sheetCfgWithRange['_endRow'] = $endRow;
+            $sheetCfgWithRange = $this->buildSheetCfgWithRange(
+                $sheetCfg,
+                $startColumn,
+                $endColumn,
+                $startRow,
+                $endRow,
+            );
 
             $csvFilename = $this->output->createCsv($sheetCfgWithRange);
             $this->output->createManifest($csvFilename, $sheetCfg['outputTable']);
@@ -192,6 +195,7 @@ class Extractor
         int $endColumn,
         int $startRow,
         int $sheetRowCount,
+        int $sheetColumnCount,
     ): void {
         $offset = $startRow;
         $limit = 1000;
@@ -208,7 +212,7 @@ class Extractor
 
             $range = $this->getRange(
                 $sheet['properties']['title'],
-                $sheetRowCount,
+                $sheetColumnCount,
                 $offset,
                 $limit,
                 $startColumn,
@@ -222,11 +226,13 @@ class Extractor
 
             if (!empty($response['values'])) {
                 if ($firstBatch) {
-                    $sheetCfgWithRange = $sheetCfg;
-                    $sheetCfgWithRange['_startColumn'] = $startColumn;
-                    $sheetCfgWithRange['_endColumn'] = $endColumn;
-                    $sheetCfgWithRange['_startRow'] = $startRow;
-                    $sheetCfgWithRange['_endRow'] = null;
+                    $sheetCfgWithRange = $this->buildSheetCfgWithRange(
+                        $sheetCfg,
+                        $startColumn,
+                        $endColumn,
+                        $startRow,
+                        null,
+                    );
 
                     $csvFilename = $this->output->createCsv($sheetCfgWithRange);
                     $this->output->createManifest($csvFilename, $sheetCfg['outputTable']);
@@ -253,14 +259,14 @@ class Extractor
 
     public function getRange(
         string $sheetTitle,
-        int $columnCount,
+        int $sheetColumnCount,
         int $rowOffset = 1,
         int $rowLimit = 1000,
         ?int $startColumn = null,
         ?int $endColumn = null,
     ): string {
         $firstColumn = $this->columnToLetter($startColumn ?? 1);
-        $lastColumn = $this->columnToLetter($endColumn ?? $columnCount);
+        $lastColumn = $this->columnToLetter($endColumn ?? $sheetColumnCount);
 
         $start = $firstColumn . $rowOffset;
         $end = $lastColumn . ($rowOffset + $rowLimit - 1);
@@ -396,6 +402,17 @@ class Extractor
             ));
         }
 
+        // Throw if startRow exceeds sheet (no meaningful data to return)
+        if ($startRow !== null && $startRow > $sheetRowCount) {
+            throw new UserException(sprintf(
+                'Start row %d in range "%s" exceeds sheet "%s" row count (%d)',
+                $startRow,
+                $range,
+                $sheetTitle,
+                $sheetRowCount,
+            ));
+        }
+
         // Cap to sheet boundaries (silent capping per user requirement)
         $cappedStartColumn = max(1, min($startColumn, $sheetColumnCount));
         $cappedEndColumn = max(1, min($endColumn, $sheetColumnCount));
@@ -416,6 +433,25 @@ class Extractor
         }
 
         return [$cappedStartColumn, $cappedEndColumn, $cappedStartRow, $cappedEndRow];
+    }
+
+    /**
+     * @param array<mixed> $sheetCfg
+     * @return array<mixed>
+     */
+    private function buildSheetCfgWithRange(
+        array $sheetCfg,
+        int $startColumn,
+        int $endColumn,
+        int $startRow,
+        ?int $endRow,
+    ): array {
+        $cfg = $sheetCfg;
+        $cfg['_startColumn'] = $startColumn;
+        $cfg['_endColumn']   = $endColumn;
+        $cfg['_startRow']    = $startRow;
+        $cfg['_endRow']      = $endRow;
+        return $cfg;
     }
 
     public function refreshTokenCallback(string $accessToken, string $refreshToken): void

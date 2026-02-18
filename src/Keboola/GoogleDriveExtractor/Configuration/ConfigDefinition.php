@@ -62,7 +62,7 @@ class ConfigDefinition implements ConfigurationInterface
                                         if ($v === '') {
                                             return false;
                                         }
-                                        return !preg_match('/^[A-Z]+(\d+)?:[A-Z]+(\d+)?$/i', $v);
+                                        return !preg_match('/^[A-Z]+([1-9]\d*)?:[A-Z]+([1-9]\d*)?$/i', $v);
                                     })
                                     ->thenInvalid(
                                         'Column range must be in format "A:E" (columns), ' .

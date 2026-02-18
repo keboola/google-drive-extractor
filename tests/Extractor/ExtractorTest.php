@@ -192,10 +192,6 @@ class ExtractorTest extends TestCase
         // Cap rows: Sheet has 50 rows, but range requests A1:E100
         $result = $method->invoke($this->extractor, 'A1:E100', 50, 26, 'Sheet1');
         $this->assertEquals([1, 5, 1, 50], $result);
-
-        // Cap start row: Start row 1000, but sheet has only 100 rows
-        $result = $method->invoke($this->extractor, 'A1000:E', 100, 26, 'Sheet1');
-        $this->assertEquals([1, 5, 100, null], $result);
     }
 
     public function testParseRangeInvalidColumnOrder(): void
@@ -355,8 +351,19 @@ class ExtractorTest extends TestCase
         $method = $reflection->getMethod('parseRange');
         $method->setAccessible(true);
 
-        // Very large row numbers should be capped to sheet size
-        $result = $method->invoke($this->extractor, 'A999999:E', 1000, 26, 'Sheet1');
-        $this->assertEquals([1, 5, 1000, null], $result);
+        $this->expectException(\Keboola\GoogleDriveExtractor\Exception\UserException::class);
+        $this->expectExceptionMessageMatches('/Start row \d+ in range .* exceeds sheet .* row count/');
+        $method->invoke($this->extractor, 'A999999:E', 1000, 26, 'Sheet1');
+    }
+
+    public function testParseRangeStartRowExceedsSheet(): void
+    {
+        $reflection = new \ReflectionClass($this->extractor);
+        $method = $reflection->getMethod('parseRange');
+        $method->setAccessible(true);
+
+        $this->expectException(\Keboola\GoogleDriveExtractor\Exception\UserException::class);
+        $this->expectExceptionMessageMatches('/Start row \d+ in range .* exceeds sheet .* row count/');
+        $method->invoke($this->extractor, 'A500:E', 100, 26, 'Sheet1');
     }
 }

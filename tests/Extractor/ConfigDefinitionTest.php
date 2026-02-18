@@ -92,6 +92,8 @@ class ConfigDefinitionTest extends TestCase
         yield 'with-spaces' => ['A 1:E 10'];
         yield 'empty-start' => [':E10'];
         yield 'empty-end' => ['A1:'];
+        yield 'row-zero-start' => ['A0:E10'];
+        yield 'row-zero-end' => ['A1:E0'];
     }
 
     public function testEmptyColumnRangeAllowed(): void
