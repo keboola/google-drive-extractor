@@ -62,9 +62,12 @@ class ConfigDefinition implements ConfigurationInterface
                                         if ($v === '') {
                                             return false;
                                         }
-                                        return !preg_match('/^[A-Z]+:[A-Z]+$/', $v);
+                                        return !preg_match('/^[A-Z]+([1-9]\d*)?:[A-Z]+([1-9]\d*)?$/i', $v);
                                     })
-                                    ->thenInvalid('Column range must be in format "A:E" (letter:letter)')
+                                    ->thenInvalid(
+                                        'Column range must be in format "A:E" (columns), ' .
+                                        '"A1:E10" (bounded), "A10:E" (start row), or "A:E10" (end row)',
+                                    )
                                 ->end()
                             ->end()
                             ->arrayNode('header')
