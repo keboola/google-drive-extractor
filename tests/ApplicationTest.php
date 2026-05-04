@@ -97,6 +97,10 @@ class ApplicationTest extends BaseTest
         new Application($config);
     }
 
+    /**
+     * @param array<string, mixed> $testFile
+     * @return array<string, mixed>
+     */
     private function makeQueryConfig(array $testFile, ?string $query = null): array
     {
         $config = [

@@ -30,7 +30,7 @@ class Application
         $container['action'] = isset($config['action'])?$config['action']:'run';
         $container['parameters'] = $this->validateParameters(
             $config['parameters'],
-            $this->configDefinitionForAction($container['action']),
+            $this->configDefinitionForAction((string) $container['action']),
         );
         $container['logger'] = function ($c) {
             $logger = new Logger('ex-google-drive');
@@ -142,8 +142,12 @@ class Application
         ];
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     private function queryAction(): array
     {
+        /** @var array<string, mixed> $parameters */
         $parameters = $this->container['parameters'];
         $fileId = (string) $parameters['fileId'];
         $query = isset($parameters['query']) ? (string) $parameters['query'] : '';
