@@ -5,4 +5,5 @@ parameters:
     excludePaths:
         - vendor/symfony/filesystem/Filesystem.php
         - src/Keboola/GoogleDriveExtractor/Configuration/ConfigDefinition.php
+        - src/Keboola/GoogleDriveExtractor/Configuration/QueryConfigDefinition.php
     ignoreErrors:

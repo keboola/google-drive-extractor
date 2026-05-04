@@ -90,8 +90,24 @@ class ApplicationTest extends BaseTest
 
     public function testQueryActionMissingFileId(): void
     {
-        $config = $this->makeQueryConfig($this->testFile);
-        unset($config['parameters']['fileId']);
+        $config = [
+            'action' => 'query',
+            'authorization' => [
+                'oauth_api' => [
+                    'credentials' => [
+                        'appKey' => getenv('CLIENT_ID'),
+                        '#appSecret' => getenv('CLIENT_SECRET'),
+                        '#data' => json_encode([
+                            'access_token' => getenv('ACCESS_TOKEN'),
+                            'refresh_token' => getenv('REFRESH_TOKEN'),
+                        ]),
+                    ],
+                ],
+            ],
+            'parameters' => [
+                'data_dir' => __DIR__ . '/data',
+            ],
+        ];
 
         $this->expectException(UserException::class);
         new Application($config);

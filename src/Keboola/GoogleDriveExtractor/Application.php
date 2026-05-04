@@ -26,11 +26,12 @@ class Application
 
     public function __construct(array $config)
     {
+        $action = isset($config['action']) && is_string($config['action']) ? $config['action'] : 'run';
         $container = new Container();
-        $container['action'] = isset($config['action'])?$config['action']:'run';
+        $container['action'] = $action;
         $container['parameters'] = $this->validateParameters(
             $config['parameters'],
-            $this->configDefinitionForAction((string) $container['action']),
+            $this->configDefinitionForAction($action),
         );
         $container['logger'] = function ($c) {
             $logger = new Logger('ex-google-drive');
@@ -149,8 +150,13 @@ class Application
     {
         /** @var array<string, mixed> $parameters */
         $parameters = $this->container['parameters'];
-        $fileId = (string) $parameters['fileId'];
-        $query = isset($parameters['query']) ? (string) $parameters['query'] : '';
+        $rawFileId = $parameters['fileId'] ?? null;
+        if (!is_string($rawFileId) || $rawFileId === '') {
+            throw new UserException('Parameter "fileId" is required for the "query" action.');
+        }
+        $fileId = $rawFileId;
+        $rawQuery = $parameters['query'] ?? '';
+        $query = is_string($rawQuery) ? $rawQuery : '';
 
         /** @var Client $client */
         $client = $this->container['google_drive_client'];
