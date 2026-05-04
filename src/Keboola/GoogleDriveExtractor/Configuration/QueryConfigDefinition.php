@@ -29,7 +29,10 @@ class QueryConfigDefinition implements ConfigurationInterface
                     ->info('Google Spreadsheet ID')
                 ->end()
                 ->scalarNode('query')
-                    ->info('A1 notation range, optionally prefixed with sheet name (e.g. "Sheet1!A1:E50"). When omitted, action returns spreadsheet metadata.')
+                    ->info(
+                        'A1 notation range, optionally prefixed with sheet name (e.g. "Sheet1!A1:E50"). '
+                        . 'When omitted, action returns spreadsheet metadata.',
+                    )
                 ->end()
             ->end();
 
