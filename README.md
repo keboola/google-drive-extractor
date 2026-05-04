@@ -26,6 +26,12 @@ parameters:
         rows: 0            # Set to 0 for no header (generates column letters)
 ```
 
+## Sync actions
+
+In addition to the default `run` action, the component exposes the following synchronous actions:
+
+- `query` — inspects a Google Spreadsheet without running an extraction. Returns the spreadsheet's tabs and dimensions, or the values of an A1 range. Intended for agent-driven introspection during configuration; see [docs/agent-query-action.md](./docs/agent-query-action.md).
+
 ## OAuth Registration
 
 Note that this extractor is using [Keboola OAuth Bundle](https://github.com/keboola/oauth-v2-bundle) to store OAuth credentials.

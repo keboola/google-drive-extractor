@@ -8,6 +8,7 @@ use GuzzleHttp\Exception\RequestException;
 use GuzzleHttp\Psr7\Response;
 use Keboola\Google\ClientBundle\Google\RestApi;
 use Keboola\GoogleDriveExtractor\Configuration\ConfigDefinition;
+use Keboola\GoogleDriveExtractor\Configuration\QueryConfigDefinition;
 use Keboola\GoogleDriveExtractor\Exception\ApplicationException;
 use Keboola\GoogleDriveExtractor\Exception\UserException;
 use Keboola\GoogleDriveExtractor\Extractor\Extractor;
@@ -15,6 +16,7 @@ use Keboola\GoogleDriveExtractor\Extractor\Output;
 use Keboola\GoogleDriveExtractor\GoogleDrive\Client;
 use Monolog\Handler\NullHandler;
 use Pimple\Container;
+use Symfony\Component\Config\Definition\ConfigurationInterface;
 use Symfony\Component\Config\Definition\Exception\InvalidConfigurationException;
 use Symfony\Component\Config\Definition\Processor;
 
@@ -26,7 +28,10 @@ class Application
     {
         $container = new Container();
         $container['action'] = isset($config['action'])?$config['action']:'run';
-        $container['parameters'] = $this->validateParameters($config['parameters']);
+        $container['parameters'] = $this->validateParameters(
+            $config['parameters'],
+            $this->configDefinitionForAction($container['action']),
+        );
         $container['logger'] = function ($c) {
             $logger = new Logger('ex-google-drive');
             if ($c['action'] !== 'run') {
@@ -137,12 +142,62 @@ class Application
         ];
     }
 
-    private function validateParameters(array $parameters): array
+    private function queryAction(): array
+    {
+        $parameters = $this->container['parameters'];
+        $fileId = (string) $parameters['fileId'];
+        $query = isset($parameters['query']) ? (string) $parameters['query'] : '';
+
+        /** @var Client $client */
+        $client = $this->container['google_drive_client'];
+
+        if ($query === '') {
+            $spreadsheet = $client->getSpreadsheet($fileId);
+            $sheets = [];
+            foreach ($spreadsheet['sheets'] ?? [] as $sheet) {
+                $properties = $sheet['properties'] ?? [];
+                $grid = $properties['gridProperties'] ?? [];
+                $sheets[] = [
+                    'sheetId' => $properties['sheetId'] ?? null,
+                    'title' => $properties['title'] ?? null,
+                    'rowCount' => $grid['rowCount'] ?? null,
+                    'columnCount' => $grid['columnCount'] ?? null,
+                ];
+            }
+
+            return [
+                'status' => 'success',
+                'spreadsheet' => [
+                    'spreadsheetId' => $spreadsheet['spreadsheetId'] ?? $fileId,
+                    'title' => $spreadsheet['properties']['title'] ?? null,
+                    'sheets' => $sheets,
+                ],
+            ];
+        }
+
+        $response = $client->getSpreadsheetValues($fileId, $query);
+
+        return [
+            'status' => 'success',
+            'range' => $response['range'] ?? $query,
+            'values' => $response['values'] ?? [],
+        ];
+    }
+
+    private function configDefinitionForAction(string $action): ConfigurationInterface
+    {
+        if ($action === 'query') {
+            return new QueryConfigDefinition();
+        }
+        return new ConfigDefinition();
+    }
+
+    private function validateParameters(array $parameters, ConfigurationInterface $definition): array
     {
         try {
             $processor = new Processor();
             return $processor->processConfiguration(
-                new ConfigDefinition(),
+                $definition,
                 [$parameters],
             );
         } catch (InvalidConfigurationException $e) {

@@ -55,4 +55,72 @@ class ApplicationTest extends BaseTest
         $this->expectExceptionMessage('Sheet id "18293729" not found');
         $this->application->run();
     }
+
+    public function testQueryActionMetadata(): void
+    {
+        $config = $this->makeQueryConfig($this->testFile);
+        $app = new Application($config);
+
+        $result = $app->run();
+
+        $this->assertSame('success', $result['status']);
+        $this->assertArrayHasKey('spreadsheet', $result);
+        $this->assertSame($this->testFile['spreadsheetId'], $result['spreadsheet']['spreadsheetId']);
+        $this->assertNotEmpty($result['spreadsheet']['sheets']);
+        $firstSheet = $result['spreadsheet']['sheets'][0];
+        $this->assertArrayHasKey('sheetId', $firstSheet);
+        $this->assertArrayHasKey('title', $firstSheet);
+        $this->assertArrayHasKey('rowCount', $firstSheet);
+        $this->assertArrayHasKey('columnCount', $firstSheet);
+    }
+
+    public function testQueryActionRange(): void
+    {
+        $sheetTitle = $this->testFile['sheets'][0]['properties']['title'];
+        $config = $this->makeQueryConfig($this->testFile, sprintf('%s!A1:E5', $sheetTitle));
+        $app = new Application($config);
+
+        $result = $app->run();
+
+        $this->assertSame('success', $result['status']);
+        $this->assertArrayHasKey('range', $result);
+        $this->assertArrayHasKey('values', $result);
+        $this->assertIsArray($result['values']);
+    }
+
+    public function testQueryActionMissingFileId(): void
+    {
+        $config = $this->makeQueryConfig($this->testFile);
+        unset($config['parameters']['fileId']);
+
+        $this->expectException(UserException::class);
+        new Application($config);
+    }
+
+    private function makeQueryConfig(array $testFile, ?string $query = null): array
+    {
+        $config = [
+            'action' => 'query',
+            'authorization' => [
+                'oauth_api' => [
+                    'credentials' => [
+                        'appKey' => getenv('CLIENT_ID'),
+                        '#appSecret' => getenv('CLIENT_SECRET'),
+                        '#data' => json_encode([
+                            'access_token' => getenv('ACCESS_TOKEN'),
+                            'refresh_token' => getenv('REFRESH_TOKEN'),
+                        ]),
+                    ],
+                ],
+            ],
+            'parameters' => [
+                'data_dir' => __DIR__ . '/data',
+                'fileId' => $testFile['spreadsheetId'],
+            ],
+        ];
+        if ($query !== null) {
+            $config['parameters']['query'] = $query;
+        }
+        return $config;
+    }
 }
