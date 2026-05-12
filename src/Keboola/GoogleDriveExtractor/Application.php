@@ -8,7 +8,7 @@ use GuzzleHttp\Exception\RequestException;
 use GuzzleHttp\Psr7\Response;
 use Keboola\Google\ClientBundle\Google\RestApi;
 use Keboola\GoogleDriveExtractor\Configuration\ConfigDefinition;
-use Keboola\GoogleDriveExtractor\Configuration\QueryConfigDefinition;
+use Keboola\GoogleDriveExtractor\Configuration\ProbeConfigDefinition;
 use Keboola\GoogleDriveExtractor\Exception\ApplicationException;
 use Keboola\GoogleDriveExtractor\Exception\UserException;
 use Keboola\GoogleDriveExtractor\Extractor\Extractor;
@@ -146,13 +146,13 @@ class Application
     /**
      * @return array<string, mixed>
      */
-    private function queryAction(): array
+    private function probeAction(): array
     {
         /** @var array<string, mixed> $parameters */
         $parameters = $this->container['parameters'];
         $rawFileId = $parameters['fileId'] ?? null;
         if (!is_string($rawFileId) || $rawFileId === '') {
-            throw new UserException('Parameter "fileId" is required for the "query" action.');
+            throw new UserException('Parameter "fileId" is required for the "probe" action.');
         }
         $fileId = $rawFileId;
         $rawQuery = $parameters['query'] ?? '';
@@ -196,8 +196,8 @@ class Application
 
     private function configDefinitionForAction(string $action): ConfigurationInterface
     {
-        if ($action === 'query') {
-            return new QueryConfigDefinition();
+        if ($action === 'probe') {
+            return new ProbeConfigDefinition();
         }
         return new ConfigDefinition();
     }

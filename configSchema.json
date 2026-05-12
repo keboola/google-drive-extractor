@@ -1,0 +1,44 @@
+{
+  "type": "object",
+  "title": "keboola.ex-google-drive — Root Configuration (parameters)",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "additionalProperties": true,
+  "properties": {
+    "#serviceAccount": {
+      "type": "string",
+      "title": "Service Account JSON",
+      "format": "password",
+      "propertyOrder": 10,
+      "description": "Optional. Encrypted JSON of a Google service account that has been granted at least viewer access to the target spreadsheet. If unset, the component falls back to the OAuth credentials in `authorization.oauth_api.credentials`. Used by both `run` and the `probe` sync action."
+    },
+    "fileId": {
+      "type": "string",
+      "title": "Spreadsheet ID (for `probe`)",
+      "propertyOrder": 100,
+      "description": "Google Spreadsheet ID to inspect. Required when invoking the **`probe` sync action**. Ignored by the `run` action (which sources `fileId` from `parameters.sheets[*].fileId`)."
+    },
+    "query": {
+      "type": "string",
+      "title": "Probe Range (A1 notation)",
+      "format": "editor",
+      "propertyOrder": 110,
+      "description": "Free-form [A1 notation](https://developers.google.com/sheets/api/guides/concepts#cell) range executed via the **`probe` sync action** — intended for fast, exploratory introspection by an LLM agent that is configuring this extractor on behalf of a user. Provide a range like `Sheet1!A1:E50` and click **Run Probe**; the values are returned as a JSON array of row arrays in the action response. Leave empty to get spreadsheet metadata (list of tabs with `sheetId`, `title`, `rowCount`, `columnCount`) instead of cell values.\n\n**Use this to:** confirm a `fileId` is reachable, enumerate tabs, sample a few rows, and validate that the right `columnRange` and `header.rows` settings will produce sensible output — **before** committing to a long-running extraction (`action: \"run\"`).\n\n**Recommended discovery sequence:**\n1. **Metadata** — leave `query` empty to list tabs and grid sizes.\n2. **Header sample** — `Sheet1!A1:Z10` to confirm the header layout.\n3. **Bottom-of-data probe** (optional) — e.g. `Sheet1!A995:Z1000` to confirm the data ends where metadata says.\n\n**A1 notation cheatsheet:**\n- `Sheet1!A1:E50` — rows 1–50, columns A–E of `Sheet1`.\n- `Sheet1!A:E` — every row, columns A–E.\n- `Sheet1` — the whole tab.\n- `A1:E10` — assumes the first tab; prefer the explicit form.\n- Tab names with spaces or special characters must be single-quoted: `'My Sheet'!A1:E10`.\n\n**Rules for agents (no server-side enforcement — these are your responsibility):**\n- **Keep ranges small.** Sync-action responses travel through the platform's stdout channel; very large payloads will be truncated or rejected. A few hundred cells is generally safe; tens of thousands is not.\n- **Always start with metadata** before reading values — it's cheap and tells you the actual `rowCount`/`columnCount` so you can pick a sensible range.\n- **Sample before sweeping.** `Sheet1!A1:Z10` to see the header layout is almost always enough to write the right `run` config.\n- The action is **read-only by API surface** (`getSpreadsheetValues` is a GET) but treat the spreadsheet as production data anyway.\n\n**Response shape — metadata mode (empty `query`):**\n```json\n{\n  \"status\": \"success\",\n  \"spreadsheet\": {\n    \"spreadsheetId\": \"1AbC...\",\n    \"title\": \"Quarterly numbers\",\n    \"sheets\": [\n      { \"sheetId\": 0, \"title\": \"Sheet1\", \"rowCount\": 1000, \"columnCount\": 26 }\n    ]\n  }\n}\n```\n\n**Response shape — data mode (with `query`):**\n```json\n{\n  \"status\": \"success\",\n  \"range\": \"Sheet1!A1:E50\",\n  \"values\": [\n    [\"id\", \"name\", \"country\"],\n    [\"1\", \"Alice\", \"CZ\"]\n  ]\n}\n```\n`values` is the raw Sheets API output: trailing empty cells in a row are omitted, and rows entirely past the last non-empty row are not returned at all. An empty sheet/range returns `\"values\": []`.\n\n**Mapping back to a `run` config** — after the metadata + sample loop, the agent can populate `parameters.sheets[*]` from the probe response:\n\n| `run` field        | Source from probe response                                |\n| ------------------ | --------------------------------------------------------- |\n| `fileId`           | Same `fileId` you passed in.                              |\n| `fileTitle`        | `spreadsheet.title` from metadata mode.                   |\n| `sheetId`          | `spreadsheet.sheets[*].sheetId` (numeric gid).            |\n| `sheetTitle`       | `spreadsheet.sheets[*].title`.                            |\n| `columnRange`      | Decided from sampling (e.g. `\"A:E\"` if data ends at E).   |\n| `header.rows`      | `0` if row 1 is data; `1` if it's a header.               |\n| `outputTable`      | Picked by the agent / user; not derivable from the sheet. |\n\n**Errors:** missing `fileId`, invalid A1 syntax, unreachable spreadsheet, expired credentials, etc. → action exits non-zero with a `UserException` whose message contains the underlying API error. Invalid OAuth/service-account credentials surface as an authorization error.\n\n**Related actions:** `run` — the actual extraction. Asynchronous, writes output tables to the data directory. Not for use during agent configuration.",
+      "options": {
+        "editor": {
+          "mode": "text/plain"
+        }
+      }
+    },
+    "run_probe": {
+      "type": "button",
+      "format": "sync-action",
+      "propertyOrder": 120,
+      "options": {
+        "async": {
+          "label": "Run Probe",
+          "action": "probe"
+        }
+      }
+    }
+  }
+}

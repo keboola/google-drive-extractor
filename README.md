@@ -30,7 +30,7 @@ parameters:
 
 In addition to the default `run` action, the component exposes the following synchronous actions:
 
-- `query` — inspects a Google Spreadsheet without running an extraction. Returns the spreadsheet's tabs and dimensions, or the values of an A1 range. Intended for agent-driven introspection during configuration; see [docs/agent-query-action.md](./docs/agent-query-action.md).
+- `probe` — inspects a Google Spreadsheet without running an extraction. Returns the spreadsheet's tabs and dimensions, or the values of an A1 range. Intended for agent-driven introspection during configuration. The action contract and usage guidance live in [`configSchema.json`](./configSchema.json) (under the `query` field's `description`) — this is the same schema that ships to the Keboola developer portal.
 
 ## OAuth Registration
 

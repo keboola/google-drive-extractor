@@ -56,9 +56,9 @@ class ApplicationTest extends BaseTest
         $this->application->run();
     }
 
-    public function testQueryActionMetadata(): void
+    public function testProbeActionMetadata(): void
     {
-        $config = $this->makeQueryConfig($this->testFile);
+        $config = $this->makeProbeConfig($this->testFile);
         $app = new Application($config);
 
         $result = $app->run();
@@ -74,10 +74,10 @@ class ApplicationTest extends BaseTest
         $this->assertArrayHasKey('columnCount', $firstSheet);
     }
 
-    public function testQueryActionRange(): void
+    public function testProbeActionRange(): void
     {
         $sheetTitle = $this->testFile['sheets'][0]['properties']['title'];
-        $config = $this->makeQueryConfig($this->testFile, sprintf('%s!A1:E5', $sheetTitle));
+        $config = $this->makeProbeConfig($this->testFile, sprintf('%s!A1:E5', $sheetTitle));
         $app = new Application($config);
 
         $result = $app->run();
@@ -88,10 +88,10 @@ class ApplicationTest extends BaseTest
         $this->assertIsArray($result['values']);
     }
 
-    public function testQueryActionMissingFileId(): void
+    public function testProbeActionMissingFileId(): void
     {
         $config = [
-            'action' => 'query',
+            'action' => 'probe',
             'authorization' => [
                 'oauth_api' => [
                     'credentials' => [
@@ -117,10 +117,10 @@ class ApplicationTest extends BaseTest
      * @param array<string, mixed> $testFile
      * @return array<string, mixed>
      */
-    private function makeQueryConfig(array $testFile, ?string $query = null): array
+    private function makeProbeConfig(array $testFile, ?string $query = null): array
     {
         $config = [
-            'action' => 'query',
+            'action' => 'probe',
             'authorization' => [
                 'oauth_api' => [
                     'credentials' => [
