@@ -117,7 +117,7 @@ class ApplicationTest extends BaseTest
      * @param array<string, mixed> $testFile
      * @return array<string, mixed>
      */
-    private function makeProbeConfig(array $testFile, ?string $query = null): array
+    private function makeProbeConfig(array $testFile, ?string $probe = null): array
     {
         $config = [
             'action' => 'probe',
@@ -138,8 +138,8 @@ class ApplicationTest extends BaseTest
                 'fileId' => $testFile['spreadsheetId'],
             ],
         ];
-        if ($query !== null) {
-            $config['parameters']['query'] = $query;
+        if ($probe !== null) {
+            $config['parameters']['probe'] = $probe;
         }
         return $config;
     }

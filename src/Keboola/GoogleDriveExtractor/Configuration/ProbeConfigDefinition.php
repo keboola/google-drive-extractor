@@ -28,7 +28,7 @@ class ProbeConfigDefinition implements ConfigurationInterface
                     ->cannotBeEmpty()
                     ->info('Google Spreadsheet ID')
                 ->end()
-                ->scalarNode('query')
+                ->scalarNode('probe')
                     ->info(
                         'A1 notation range, optionally prefixed with sheet name (e.g. "Sheet1!A1:E50"). '
                         . 'When omitted, action returns spreadsheet metadata.',

@@ -155,13 +155,13 @@ class Application
             throw new UserException('Parameter "fileId" is required for the "probe" action.');
         }
         $fileId = $rawFileId;
-        $rawQuery = $parameters['query'] ?? '';
-        $query = is_string($rawQuery) ? $rawQuery : '';
+        $rawProbe = $parameters['probe'] ?? '';
+        $probe = is_string($rawProbe) ? $rawProbe : '';
 
         /** @var Client $client */
         $client = $this->container['google_drive_client'];
 
-        if ($query === '') {
+        if ($probe === '') {
             $spreadsheet = $client->getSpreadsheet($fileId);
             $sheets = [];
             foreach ($spreadsheet['sheets'] ?? [] as $sheet) {
@@ -185,11 +185,11 @@ class Application
             ];
         }
 
-        $response = $client->getSpreadsheetValues($fileId, $query);
+        $response = $client->getSpreadsheetValues($fileId, $probe);
 
         return [
             'status' => 'success',
-            'range' => $response['range'] ?? $query,
+            'range' => $response['range'] ?? $probe,
             'values' => $response['values'] ?? [],
         ];
     }
