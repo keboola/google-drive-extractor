@@ -55,4 +55,92 @@ class ApplicationTest extends BaseTest
         $this->expectExceptionMessage('Sheet id "18293729" not found');
         $this->application->run();
     }
+
+    public function testProbeActionMetadata(): void
+    {
+        $config = $this->makeProbeConfig($this->testFile);
+        $app = new Application($config);
+
+        $result = $app->run();
+
+        $this->assertSame('success', $result['status']);
+        $this->assertArrayHasKey('spreadsheet', $result);
+        $this->assertSame($this->testFile['spreadsheetId'], $result['spreadsheet']['spreadsheetId']);
+        $this->assertNotEmpty($result['spreadsheet']['sheets']);
+        $firstSheet = $result['spreadsheet']['sheets'][0];
+        $this->assertArrayHasKey('sheetId', $firstSheet);
+        $this->assertArrayHasKey('title', $firstSheet);
+        $this->assertArrayHasKey('rowCount', $firstSheet);
+        $this->assertArrayHasKey('columnCount', $firstSheet);
+    }
+
+    public function testProbeActionRange(): void
+    {
+        $sheetTitle = $this->testFile['sheets'][0]['properties']['title'];
+        $config = $this->makeProbeConfig($this->testFile, sprintf('%s!A1:E5', $sheetTitle));
+        $app = new Application($config);
+
+        $result = $app->run();
+
+        $this->assertSame('success', $result['status']);
+        $this->assertArrayHasKey('range', $result);
+        $this->assertArrayHasKey('values', $result);
+        $this->assertIsArray($result['values']);
+    }
+
+    public function testProbeActionMissingFileId(): void
+    {
+        $config = [
+            'action' => 'probe',
+            'authorization' => [
+                'oauth_api' => [
+                    'credentials' => [
+                        'appKey' => getenv('CLIENT_ID'),
+                        '#appSecret' => getenv('CLIENT_SECRET'),
+                        '#data' => json_encode([
+                            'access_token' => getenv('ACCESS_TOKEN'),
+                            'refresh_token' => getenv('REFRESH_TOKEN'),
+                        ]),
+                    ],
+                ],
+            ],
+            'parameters' => [
+                'data_dir' => __DIR__ . '/data',
+            ],
+        ];
+
+        $this->expectException(UserException::class);
+        new Application($config);
+    }
+
+    /**
+     * @param array<string, mixed> $testFile
+     * @return array<string, mixed>
+     */
+    private function makeProbeConfig(array $testFile, ?string $probe = null): array
+    {
+        $config = [
+            'action' => 'probe',
+            'authorization' => [
+                'oauth_api' => [
+                    'credentials' => [
+                        'appKey' => getenv('CLIENT_ID'),
+                        '#appSecret' => getenv('CLIENT_SECRET'),
+                        '#data' => json_encode([
+                            'access_token' => getenv('ACCESS_TOKEN'),
+                            'refresh_token' => getenv('REFRESH_TOKEN'),
+                        ]),
+                    ],
+                ],
+            ],
+            'parameters' => [
+                'data_dir' => __DIR__ . '/data',
+                'fileId' => $testFile['spreadsheetId'],
+            ],
+        ];
+        if ($probe !== null) {
+            $config['parameters']['probe'] = $probe;
+        }
+        return $config;
+    }
 }

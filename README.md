@@ -26,6 +26,12 @@ parameters:
         rows: 0            # Set to 0 for no header (generates column letters)
 ```
 
+## Sync actions
+
+In addition to the default `run` action, the component exposes the following synchronous actions:
+
+- `probe` — inspects a Google Spreadsheet without running an extraction. Returns the spreadsheet's tabs and dimensions, or the values of an A1 range. Intended for agent-driven introspection during configuration. The action contract and usage guidance live in [`configSchema.json`](./configSchema.json) (under the `probe` field's `description`) — this is the same schema that ships to the Keboola developer portal.
+
 ## OAuth Registration
 
 Note that this extractor is using [Keboola OAuth Bundle](https://github.com/keboola/oauth-v2-bundle) to store OAuth credentials.

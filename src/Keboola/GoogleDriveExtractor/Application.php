@@ -8,6 +8,7 @@ use GuzzleHttp\Exception\RequestException;
 use GuzzleHttp\Psr7\Response;
 use Keboola\Google\ClientBundle\Google\RestApi;
 use Keboola\GoogleDriveExtractor\Configuration\ConfigDefinition;
+use Keboola\GoogleDriveExtractor\Configuration\ProbeConfigDefinition;
 use Keboola\GoogleDriveExtractor\Exception\ApplicationException;
 use Keboola\GoogleDriveExtractor\Exception\UserException;
 use Keboola\GoogleDriveExtractor\Extractor\Extractor;
@@ -15,6 +16,7 @@ use Keboola\GoogleDriveExtractor\Extractor\Output;
 use Keboola\GoogleDriveExtractor\GoogleDrive\Client;
 use Monolog\Handler\NullHandler;
 use Pimple\Container;
+use Symfony\Component\Config\Definition\ConfigurationInterface;
 use Symfony\Component\Config\Definition\Exception\InvalidConfigurationException;
 use Symfony\Component\Config\Definition\Processor;
 
@@ -24,9 +26,13 @@ class Application
 
     public function __construct(array $config)
     {
+        $action = isset($config['action']) && is_string($config['action']) ? $config['action'] : 'run';
         $container = new Container();
-        $container['action'] = isset($config['action'])?$config['action']:'run';
-        $container['parameters'] = $this->validateParameters($config['parameters']);
+        $container['action'] = $action;
+        $container['parameters'] = $this->validateParameters(
+            $config['parameters'],
+            $this->configDefinitionForAction($action),
+        );
         $container['logger'] = function ($c) {
             $logger = new Logger('ex-google-drive');
             if ($c['action'] !== 'run') {
@@ -137,12 +143,71 @@ class Application
         ];
     }
 
-    private function validateParameters(array $parameters): array
+    /**
+     * @return array<string, mixed>
+     */
+    private function probeAction(): array
+    {
+        /** @var array<string, mixed> $parameters */
+        $parameters = $this->container['parameters'];
+        $rawFileId = $parameters['fileId'] ?? null;
+        if (!is_string($rawFileId) || $rawFileId === '') {
+            throw new UserException('Parameter "fileId" is required for the "probe" action.');
+        }
+        $fileId = $rawFileId;
+        $rawProbe = $parameters['probe'] ?? '';
+        $probe = is_string($rawProbe) ? $rawProbe : '';
+
+        /** @var Client $client */
+        $client = $this->container['google_drive_client'];
+
+        if ($probe === '') {
+            $spreadsheet = $client->getSpreadsheet($fileId);
+            $sheets = [];
+            foreach ($spreadsheet['sheets'] ?? [] as $sheet) {
+                $properties = $sheet['properties'] ?? [];
+                $grid = $properties['gridProperties'] ?? [];
+                $sheets[] = [
+                    'sheetId' => $properties['sheetId'] ?? null,
+                    'title' => $properties['title'] ?? null,
+                    'rowCount' => $grid['rowCount'] ?? null,
+                    'columnCount' => $grid['columnCount'] ?? null,
+                ];
+            }
+
+            return [
+                'status' => 'success',
+                'spreadsheet' => [
+                    'spreadsheetId' => $spreadsheet['spreadsheetId'] ?? $fileId,
+                    'title' => $spreadsheet['properties']['title'] ?? null,
+                    'sheets' => $sheets,
+                ],
+            ];
+        }
+
+        $response = $client->getSpreadsheetValues($fileId, $probe);
+
+        return [
+            'status' => 'success',
+            'range' => $response['range'] ?? $probe,
+            'values' => $response['values'] ?? [],
+        ];
+    }
+
+    private function configDefinitionForAction(string $action): ConfigurationInterface
+    {
+        if ($action === 'probe') {
+            return new ProbeConfigDefinition();
+        }
+        return new ConfigDefinition();
+    }
+
+    private function validateParameters(array $parameters, ConfigurationInterface $definition): array
     {
         try {
             $processor = new Processor();
             return $processor->processConfiguration(
-                new ConfigDefinition(),
+                $definition,
                 [$parameters],
             );
         } catch (InvalidConfigurationException $e) {
