@@ -45,9 +45,23 @@ class ApplicationTest extends BaseTest
         $this->assertEquals($outputTableId, $manifest['destination']);
     }
 
-    public function testInvalidSpreadsheetId(): void
+    public function testInvalidSheetIdFallsBackToTitle(): void
     {
+        // When sheetId doesn't match but sheetTitle does, the extractor should
+        // fall back to title matching and succeed (with a warning log)
         $this->testFile['sheets'][0]['properties']['sheetId'] = 18293729;
+        $this->config = $this->makeConfig($this->testFile);
+        $this->application = new Application($this->config);
+
+        $result = $this->application->run();
+        $this->assertSame('ok', $result['status']);
+    }
+
+    public function testInvalidSheetIdAndTitleThrowsException(): void
+    {
+        // When both sheetId and sheetTitle are wrong, UserException is thrown
+        $this->testFile['sheets'][0]['properties']['sheetId'] = 18293729;
+        $this->testFile['sheets'][0]['properties']['title'] = 'NonExistentSheet';
         $this->config = $this->makeConfig($this->testFile);
         $this->application = new Application($this->config);
 
