@@ -82,7 +82,11 @@ class Extractor
 
     private function export(array $spreadsheet, array $sheetCfg): void
     {
-        $sheet = $this->getSheetById($spreadsheet['sheets'], (string) $sheetCfg['sheetId']);
+        $sheet = $this->getSheetById(
+            $spreadsheet['sheets'],
+            (string) $sheetCfg['sheetId'],
+            $sheetCfg['sheetTitle'] ?? '',
+        );
         $sheetRowCount = $sheet['properties']['gridProperties']['rowCount'];
         $sheetColumnCount = $sheet['properties']['gridProperties']['columnCount'];
 
@@ -246,15 +250,36 @@ class Extractor
         }
     }
 
-    private function getSheetById(array $sheets, string $id): array
+    private function getSheetById(array $sheets, string $id, string $expectedTitle = ''): array
     {
+        // Primary lookup: match by numeric sheetId (standard path)
         foreach ($sheets as $sheet) {
             if ((string) $sheet['properties']['sheetId'] === $id) {
                 return $sheet;
             }
         }
 
-        throw new UserException(sprintf('Sheet id "%s" not found', $id));
+        // Fallback: match by title when sheetId is not found
+        if ($expectedTitle !== '') {
+            foreach ($sheets as $sheet) {
+                if (($sheet['properties']['title'] ?? '') === $expectedTitle) {
+                    $this->logger->warning(sprintf(
+                        'Sheet with id "%s" not found. '
+                        . 'Matched by title "%s" (actual sheetId: %s). '
+                        . 'Please update the configuration with the correct sheetId.',
+                        $id,
+                        $expectedTitle,
+                        (string) $sheet['properties']['sheetId'],
+                    ));
+                    return $sheet;
+                }
+            }
+        }
+
+        $titleHint = $expectedTitle !== ''
+            ? sprintf(' (title "%s" also not found)', $expectedTitle)
+            : '';
+        throw new UserException(sprintf('Sheet id "%s" not found%s', $id, $titleHint));
     }
 
     public function getRange(
